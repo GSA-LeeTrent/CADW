@@ -1,0 +1,57 @@
+creates nhrdw_qms_notifications table
+
+alters nhrdw_qms_master_error_list table
+	drops qms_short_description and adds after qms_error_message_list
+	drops qms_key_text and adds after qms_short_description
+	
+creates nhrdw_qms_notification_current_v
+
+recreates procedure nhrdw_refresh_cntl
+	inserts into nhrdw_master_set_cntl
+	inserts and updates into nhrdw_snapshot_cntl
+	calls nhrdw_geolocation_refresh
+	calls nhrdw_occ_series_refresh
+	calls nhrdw_location_refresh
+	calls nhrdw_department_refresh
+	calls nhrdw_update_dept_hierarchy
+	calls nhrdw_person_refresh
+	calls nhrdw_jobcode_refresh
+	calls nhrdw_position_refresh
+	calls nhrdw_job_refresh
+	calls nhrdw_employment_refresh
+	calls nhrdw_pay_refresh
+	calls nhrdw_incentive_refresh
+	calls nhrdw_benefit_refresh
+	calls nhrdw_address_refresh
+	calls nhrdw_appraisal_refresh
+	calls nhrdw_employment_history_refresh
+	calls nhrdw_education_refresh
+	calls nhrdw_qms_empl_error_tracker_refresh
+	calls nhrdw_staffing_execute_business_rules
+	calls nhrdw_employee_work_schedule_refresh
+	calls nhrdw_fy_awd_ep_appr_refresh
+	calls nhrdw_latest_txn_id_refresh
+	
+recreates nhrdw_mgs_adhoc_g_cert_application_validate
+	creates the business rules/errors for PAR number errors
+	
+recreates nhrdw_mgs_routing_key
+	sets qms_routing_key_field_3
+	
+creates nhrdw_mgs_vacancy_validate
+	creates the business rules/errors for vacancy number format
+	
+recreates nhrdw_qms_notifications_api
+	insert into nhrdw_qms_notifications
+	
+recreates nhrdw_staffing_execute_business_rules	
+	calls nhrdw_uss_mstr_requests_validate
+	calls nhrdw_mgs_adhoc_g_vacancy_validate
+	calls nhrdw_mgs_adhoc_g_cert_application_validate
+	
+recreates nhrdw_uss_mstr_requests_validate
+	creates the business rules/errors for US Stafffing Request Number Format
+	
+inserts 309, 310, 311 into nhrdw_data_item
+
+inserts 272-276 into nhrdw_qms_master_error_list	

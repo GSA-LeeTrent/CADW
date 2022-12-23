@@ -1,0 +1,27 @@
+create or replace view nhrdw_hrlinks_employee_all_history as 
+   SELECT 
+       job.EMPLID
+      ,job.EMPL_RCD
+      ,job.EFFSEQ       
+      ,job.EFFDT 
+      ,job.GVT_WIP_STATUS
+      ,job.GVT_NOA_CODE
+      ,job.GVT_STATUS_TYPE
+      ,job.GVT_SF52_NBR
+      ,job.EMPL_STATUS
+      ,job.SETID_DEPT
+      ,pers.NAME	    
+      ,job.POSITION_ENTRY_DT
+      ,job.POSITION_NBR
+      ,job.REPORTS_TO   
+      ,job.GVT_STEP                                 
+      ,job.GVT_PAY_PLAN                        
+      ,bemail.EMAIL_ADDR 
+      ,COALESCE(empl.REHIRE_DT, empl.HIRE_DT)  LATEST_HIRE_DATE
+   FROM            ps_gvt_job job   
+	 INNER JOIN      ps_gvt_pers_data  pers    on  pers.EMPLID   = job.EMPLID AND pers.EMPL_RCD = job.EMPL_RCD AND pers.EFFSEQ   = job.EFFSEQ	AND pers.EFFDT = job.EFFDT        
+	 INNER JOIN      ps_gvt_pers_nid   nid     on   nid.EMPLID    = job.EMPLID AND nid.EMPL_RCD  = job.EMPL_RCD AND nid.EFFSEQ    = job.EFFSEQ	AND nid.EFFDT  = job.EFFDT        
+	 INNER JOIN      ps_gvt_employment empl    on  empl.EMPLID   = job.EMPLID AND empl.EMPL_RCD = job.EMPL_RCD AND empl.EFFSEQ   = job.EFFSEQ	AND empl.EFFDT = job.EFFDT        
+	 LEFT OUTER JOIN PS_EMAIL_ADDRESSES bemail on bemail.EMPLID   = job.EMPLID AND bemail.E_ADDR_TYPE = 'BUSN'    
+   WHERE   job.GVT_WIP_STATUS IN ('PRO','COR','INI','REQ')       
+ ;               	                          

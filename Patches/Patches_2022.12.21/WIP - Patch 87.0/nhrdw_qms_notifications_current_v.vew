@@ -1,0 +1,60 @@
+
+CREATE OR REPLACE VIEW nhrdw_qms_notifications_current_v  as
+SELECT 
+         rec.qms_key
+        ,rec.qms_key_text
+        ,rec.qms_short_description
+        ,dt.system_name
+        ,dt.data_item_name
+        ,dt.data_item_category
+        ,qmel.data_item_id
+        ,qmel.error_list_id
+        ,qmel.qms_error_code 
+        ,qmel.enable_qms                                		     
+        ,rec.qms_key_field_1              		
+        ,rec.qms_key_field_2              		
+        ,rec.qms_key_field_3              		
+        ,rec.qms_key_field_4              		
+        ,rec.qms_key_field_5              		
+        ,rec.qms_key_field_6              		
+        ,rec.qms_key_field_7              		
+        ,rec.qms_key_field_8              		                  
+        ,rec.qms_key_field_9              		               
+        ,rec.qms_key_field_10  
+        ,rec.field_1              		
+        ,rec.field_2              		
+        ,rec.field_3              		
+        ,rec.field_4              		
+        ,rec.field_5              		
+        ,rec.field_6              		
+        ,rec.field_7              		
+        ,rec.field_8              		                  
+        ,rec.field_9              		               
+        ,rec.field_10              		                 
+        ,rec.notification_email_address  
+        ,rec.qms_notification_text  
+        ,rec.transaction_control_id
+        ,rec.qms_routing_key                               
+        ,rec.qms_routing_key_field_1                       
+        ,rec.qms_routing_key_field_2                          
+        ,rec.qms_routing_key_field_3                          
+        ,rec.qms_routing_key_field_4                          
+        ,rec.qms_routing_key_field_5                                        
+from    nhrdw_qms_notifications rec 
+        join            nhrdw_latest_txn_controls     ltc  on  ltc.type_of_record = 'Snapshot' and rec.transaction_control_id = ltc.transaction_control_id
+        join            nhrdw_snapshot_ctrl snap  on  snap.transaction_control_id       = ltc.transaction_control_id     
+        join            nhrdw_qms_master_error_list  qmel  on  qmel.error_list_id = rec.error_list_id
+        join            nhrdw_data_item dt                 on  dt.data_item_id    = qmel.data_item_id
+   ;
+/*        
+WHERE   empljob.transaction_control_id in
+        ( select  snap_pp.transaction_control_id 
+          from    nhrdw_snapshot_ctrl snap_pp
+          where   snap_pp.type_of_record = 'Snapshot'
+          and     snap_pp.completion_status = 'S'  
+          and     snap_pp.snapshot_date = '2020-04-30'
+        );
+*/
+
+grant select on nhrdw_qms_notifications_current_v to HRLINKS_USER ;
+grant select on nhrdw_qms_notifications_current_v to ACA_USER ;

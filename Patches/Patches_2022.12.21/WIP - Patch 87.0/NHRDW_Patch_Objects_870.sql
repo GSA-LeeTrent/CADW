@@ -1,0 +1,12 @@
+SELECT "nhrdw_qms_master_error_list_alt80.tab                   "   ;     SOURCE       nhrdw_qms_master_error_list_alt80.tab                   ;
+SELECT "nhrdw_qms_notifications.tab                             "   ;     SOURCE       nhrdw_qms_notifications.tab                             ;
+SELECT "nhrdw_qms_notifications_current_v.vew                   "   ;     SOURCE       nhrdw_qms_notifications_current_v.vew                   ;
+SELECT "nhrdw_main_refresh_cntl.proc                            "   ;     SOURCE       nhrdw_main_refresh_cntl.proc                            ;
+SELECT "nhrdw_mgs_adhoc_g_cert_application_validate.proc        "   ;     SOURCE       nhrdw_mgs_adhoc_g_cert_application_validate.proc        ;
+SELECT "nhrdw_mgs_routing_key.proc                              "   ;     SOURCE       nhrdw_mgs_routing_key.proc                              ;
+SELECT "nhrdw_mgs_vacancy_validate.proc                         "   ;     SOURCE       nhrdw_mgs_vacancy_validate.proc                         ;
+SELECT "nhrdw_qms_notifications_api.proc                        "   ;     SOURCE       nhrdw_qms_notifications_api.proc                        ;
+SELECT "nhrdw_staffing_execute_business_rules.proc              "   ;     SOURCE       nhrdw_staffing_execute_business_rules.proc              ;
+SELECT "nhrdw_uss_mstr_requests_validate.proc                   "   ;     SOURCE       nhrdw_uss_mstr_requests_validate.proc                   ;
+SELECT "nhrdw_data_item_patch87.sql                             "   ;     SOURCE       nhrdw_data_item_patch87.sql                             ;
+SELECT "nhrdw_qms_master_error_list_patch87.sql                 "   ;     SOURCE       nhrdw_qms_master_error_list_patch87.sql                 ;

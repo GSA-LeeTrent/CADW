@@ -1,0 +1,288 @@
+USE new_hrdw;
+
+create or replace view nhrdw_hrlinks_employee_all_history as 
+   SELECT 
+       job.EMPLID
+      ,job.EMPL_RCD
+      ,job.EFFSEQ       
+      ,job.EFFDT 
+      ,job.GVT_WIP_STATUS
+      ,job.GVT_NOA_CODE
+      ,job.GVT_STATUS_TYPE
+      ,job.GVT_SF52_NBR
+      ,job.EMPL_STATUS
+      ,job.SETID_DEPT
+      ,pers.NAME	    
+      ,job.POSITION_ENTRY_DT
+      ,job.POSITION_NBR
+      ,job.REPORTS_TO   
+      ,job.GVT_STEP                                 
+      ,job.GVT_PAY_PLAN                        
+      ,bemail.EMAIL_ADDR 
+      ,COALESCE(empl.REHIRE_DT, empl.HIRE_DT)  LATEST_HIRE_DATE
+   FROM            ps_gvt_job job   
+	 INNER JOIN      ps_gvt_pers_data  pers    on  pers.EMPLID   = job.EMPLID AND pers.EMPL_RCD = job.EMPL_RCD AND pers.EFFSEQ   = job.EFFSEQ	AND pers.EFFDT = job.EFFDT        
+	 INNER JOIN      ps_gvt_pers_nid   nid     on   nid.EMPLID    = job.EMPLID AND nid.EMPL_RCD  = job.EMPL_RCD AND nid.EFFSEQ    = job.EFFSEQ	AND nid.EFFDT  = job.EFFDT        
+	 INNER JOIN      ps_gvt_employment empl    on  empl.EMPLID   = job.EMPLID AND empl.EMPL_RCD = job.EMPL_RCD AND empl.EFFSEQ   = job.EFFSEQ	AND empl.EFFDT = job.EFFDT        
+	 LEFT OUTER JOIN PS_EMAIL_ADDRESSES bemail on bemail.EMPLID   = job.EMPLID AND bemail.E_ADDR_TYPE = 'BUSN'    
+   WHERE   job.GVT_WIP_STATUS IN ('PRO','COR','INI','REQ')       
+ ;       
+
+create or replace view nhrdw_hrlinks_employee_completed_history as 
+   SELECT 
+       job.EMPLID
+      ,job.EMPL_RCD
+      ,job.EFFSEQ       
+      ,job.EFFDT 
+      ,job.GVT_WIP_STATUS
+      ,job.GVT_NOA_CODE
+      ,job.GVT_STATUS_TYPE
+      ,job.GVT_SF52_NBR
+      ,job.EMPL_STATUS
+      ,job.SETID_DEPT
+      ,pers.NAME	    
+      ,job.POSITION_ENTRY_DT
+      ,job.POSITION_NBR
+      ,job.REPORTS_TO   
+      ,job.GVT_STEP                                 
+      ,job.GVT_PAY_PLAN                        
+      ,bemail.EMAIL_ADDR 
+      ,COALESCE(empl.REHIRE_DT, empl.HIRE_DT)  LATEST_HIRE_DATE
+   FROM            ps_gvt_job job   
+	 INNER JOIN      ps_gvt_pers_data  pers on  pers.EMPLID   = job.EMPLID AND pers.EMPL_RCD = job.EMPL_RCD AND pers.EFFSEQ   = job.EFFSEQ	AND pers.EFFDT = job.EFFDT        
+	 INNER JOIN      ps_gvt_pers_nid   nid on   nid.EMPLID    = job.EMPLID AND nid.EMPL_RCD  = job.EMPL_RCD AND nid.EFFSEQ    = job.EFFSEQ	AND nid.EFFDT  = job.EFFDT        
+	 INNER JOIN      ps_gvt_employment empl on  empl.EMPLID   = job.EMPLID AND empl.EMPL_RCD = job.EMPL_RCD AND empl.EFFSEQ   = job.EFFSEQ	AND empl.EFFDT = job.EFFDT        
+	 LEFT OUTER JOIN PS_EMAIL_ADDRESSES bemail on bemail.EMPLID   = job.EMPLID AND bemail.E_ADDR_TYPE = 'BUSN'    
+   WHERE   job.GVT_WIP_STATUS IN ('PRO','COR')       
+ ;       
+
+DROP TABLE NEW_HRDW.NHRDW_SF52_REQUESTS ;
+
+CREATE TABLE NEW_HRDW.NHRDW_SF52_REQUESTS (
+ NHRDW_SF52_MSS_REQUEST_ID                               BIGINT         AUTO_INCREMENT PRIMARY KEY                                                         
+,CADW_TRANSACTION_NBR                                    VARCHAR(30)    NOT NULL                                                                                           
+,TRANSACTION_TYPE                                        VARCHAR(4)     NOT NULL                                                                                           
+,TRANSACTION_NBR           	                             BIGINT         NOT NULL   
+,TRANSACTION_STATUS_CODE                                 VARCHAR(10)    NOT NULL                                                                                           
+,TRANSACTION_STATUS_DESCR                                VARCHAR(30)    NOT NULL                                                                                           
+,REQ_POSITION_NBR              	                             VARCHAR(8)                                                                                                        
+,REQUEST_DT                   	                             DATETIME 
+,REQ_ACTION_DT_SS                                            DATETIME                                                                                                          
+,REQ_FOURDIGIT_FISCAL_YEAR_OF_REQUEST_DT                     INT(8)                                                                                                            
+,REQ_FISCAL_YEAR_ACTION_REQUEST_DT                           VARCHAR(4)                                                                                                        
+,REQ_FOURDIGIT_FISCAL_YEAR_OF_APPR_DT                        INT(8)                                                                                                            
+,REQ_FISCAL_YEAR_ACTION_APPR_DT                              VARCHAR(4)                                                                                                        
+,REQ_ACTION                    	                             VARCHAR(3)     NOT NULL                                                                                           
+,REQ_ACTION_REASON             	                             VARCHAR(3)     NOT NULL                                                                                           
+,REQ_DEPTID                    	                             VARCHAR(10)                                                                                               
+,REQ_LOCATION                  	                             VARCHAR(10)                                                                                            
+,REQ_REPORTS_TO                	                             VARCHAR(8)                                                                                               
+,REQ_REPORTS_TO_EMPLID                                       VARCHAR(11)                                                                                                       
+,REQ_REPORTS_TO_EMPL_RCD                                     BIGINT                                                                                                            
+,REQ_REPORTS_TO_EMPL_NAME                                    VARCHAR(255)                                                                                                      
+,REQ_REPORTS_TO_EMAIL_ADDR                                   VARCHAR(255)                                                                                                      
+,REQ_GVT_WORK_SCHED            	                             VARCHAR(1)                                                                                             
+,REQ_STD_HOURS                 	                             DECIMAL(6,2)           
+,REQ_Z_PD_FUNC                 	                             VARCHAR(15)                                                                                            
+,REQ_GVT_POI                   	                             VARCHAR(4)                                                                                              
+,REQ_GVT_POI_DESCR                                           VARCHAR(255)                                                                                                      
+,REQ_Z_ACCT_CD                 	                             VARCHAR(35)                                                                                                       
+,REQ_Z_PD_CSBASEID             	                             VARCHAR(80)                                                                                                       
+,REQ_BARG_UNIT                 	                             VARCHAR(4)                                                                                                        
+,REQ_REG_TEMP                  	                             VARCHAR(1)                                                                                                        
+,REQ_Z_NOTIFY_ROLE             	                             VARCHAR(1)                                                                                             
+,REQ_Z_PD_FUNC2                	                             VARCHAR(15)                                                                                                       
+,REQ_POSN_DESCR                	                             VARCHAR(30)                                                                                                       
+,REQ_DATE1                     	                             DATETIME                                                                                                          
+,REQ_DATE2                     	                             DATETIME                                                                                                          
+,REQ_DATE3                     	                             DATETIME                                                                                                          
+,REQ_DATE4                     	                             DATETIME                                                                                                          
+,REQ_TRANSACTION_NAME          	                             VARCHAR(25)   NOT NULL                                                                                            
+,REQ_WF_STATUS                 	                             VARCHAR(1)    NOT NULL                                                                                            
+,REQ_UPD_BY_USERID             	                             VARCHAR(30)   NOT NULL        
+,REQ_UPD_DTTM                  	                             DATETIME          
+,REQ_ORIGINATOR_ID             	                             VARCHAR(11)       
+,REQ_CREATED_DTTM              	                             DATETIME        
+,REQ_COMMENTS                  	                             LONGTEXT         
+,REQ_FULL_PART_TIME  	                                       VARCHAR(1)      
+,REQ_Z_MSS_GRADE     	                                       VARCHAR(10)     
+,REQ_FTE                                                     DECIMAL(7,6)     
+,REQ_BUDGETED_POSN                                           VARCHAR(1)       
+,REQ_POSN_STATUS                                             VARCHAR(1)       
+,REQ_GVT_ORG_TTL_DESCR                                       VARCHAR(70)      
+,REQ_EMPLID                                                  VARCHAR(11)      
+,REQ_EMPL_RCD                                                BIGINT            
+,REQ_EFFSEQ                                                  BIGINT            
+,REQ_NEW_EFFDT                                               DATETIME         
+,REQ_EFF_STATUS                                              VARCHAR(1)                                                                                           
+,REQ_BUSINESS_UNIT                                           VARCHAR(5)       
+,REQ_JOBCODE                                                 VARCHAR(6)       
+,REQ_SUPV_LVL_ID                                             VARCHAR(8)       
+,REQ_GVT_PAY_PLAN                                            VARCHAR(2)       
+,REQ_SAL_ADMIN_PLAN                                          VARCHAR(4)         
+,REQ_GVT_OCC_SERIES                                          VARCHAR(4)       
+,REQ_GVT_ORG_TTL_CD                                          VARCHAR(4)       
+,REQ_GVT_POSN_OCCUPIED                                       VARCHAR(1)       
+,REQ_GVT_COMP_LEVEL                                          VARCHAR(4)       
+,REQ_GVT_TARGET_GRADE                                        VARCHAR(2)       
+,REQ_GRADE                                                   VARCHAR(3)    
+,REQ_Z_AWARD_AMT                                             VARCHAR(8) 
+,REQ_Z_AWARD_HRS                                             VARCHAR(2)  
+,REQ_GVT_NOA_CODE                                            VARCHAR(4)   
+,REQ_GVT_PAR_NTE_DATE                                        DATETIME
+,REQ_STEP                                                    BIGINT
+,REQ_MSS_REC_Z_RECRUIT_IND                                   VARCHAR(1) 
+,REQ_MSS_REC_Z_RECRUIT_INIT                                  VARCHAR(1) 
+,REQ_MSS_REC_Z_RECRUIT_CANCEL                                VARCHAR(1) 
+,REQ_MSS_REC_CREATEDTTM                                      DATETIME 
+,REQ_MSS_REC_CREATEOPRID                                     VARCHAR(30) 
+,REQ_MSS_REC_LASTUPDDTTM                                     DATETIME 
+,REQ_MSS_REC_LASTUPDOPRID                                    VARCHAR(30)       
+,REQ_XREF_EOAWTHREAD_ID                                      BIGINT           
+,REQ_XREF_EOAWPRCS_ID                                        VARCHAR(30)              
+,REQ_XREF_EOAWDEFN_ID                                        VARCHAR(30)                   
+,REQ_XREF_ORIGINATORID                                       VARCHAR(30)                   
+,REQ_XREF_EOAWREQUESTOR_ID                                   VARCHAR(30)                  
+,REQ_XREF_RECNAME                                            VARCHAR(15)                 
+,REQ_XREF_EOAWTHREAD_STATUS                                  VARCHAR(1)                  
+,REQ_XREF_EOAWPARENT_THREAD                                  BIGINT               
+,REQ_XREF_EOAWDTTM_MODIFIED                                  DATETIME                    
+,REQ_XREF_COMMENTS                                           LONGTEXT       
+,REQ_APPR_AUDIT_OPRID                                    VARCHAR(30)  
+,REQ_APPR_AUDIT_STAMP                                    DATETIME    
+,REQ_APPR_AUDIT_ACTN                                     VARCHAR(1)  
+-- ,CANCEL_AUDIT_OPRID                                      VARCHAR(30)  
+-- ,CANCEL_AUDIT_STAMP                                      DATETIME      
+-- ,CANCEL_AUDIT_ACTN                                       VARCHAR(1)  
+,REQ_LATEST_AUDIT_OPRID                                      VARCHAR(30)  
+,REQ_LATEST_AUDIT_STAMP                                      DATETIME  
+,REQ_LATEST_AUDIT_ACTN                                       VARCHAR(1)  
+,REQ_REC_APPR_AUDIT_OPRID                                    VARCHAR(30)  
+,REQ_REC_APPR_AUDIT_STAMP                                    DATETIME    
+,REQ_REC_APPR_AUDIT_ACTN                                     VARCHAR(1)  
+,REQ_REC_CANCEL_AUDIT_OPRID                                  VARCHAR(30)  
+,REQ_REC_CANCEL_AUDIT_STAMP                                  DATETIME      
+,REQ_REC_CANCEL_AUDIT_ACTN                                   VARCHAR(1)  
+,REQ_REC_LATEST_AUDIT_OPRID                                  VARCHAR(30)  
+,REQ_REC_LATEST_AUDIT_STAMP                                  DATETIME  
+,REQ_REC_LATEST_AUDIT_ACTN                                   VARCHAR(1) 
+,REQ_REC_LATEST_APPR_AUDIT_STAMP                             DATETIME
+,REQ_GSA_DEPT_REGION                                         VARCHAR(10 )                                            
+,REQ_DEPT_BUSINESS_LINE                                      VARCHAR(30 )                                            
+,REQ_DEPT_DESCR                                              VARCHAR(40)  
+,REQ_DEPT_GVT_DESCR40                                        VARCHAR(40)  
+,REQ_GVT_PAR_LINE2                                           VARCHAR(10)                                           
+,REQ_GVT_PAR_LINE3                                           VARCHAR(10)                                           
+,REQ_GVT_PAR_LINE4                                           VARCHAR(10)                                           
+,REQ_GVT_PAR_LINE5                                           VARCHAR(10)                                           
+,REQ_GVT_PAR_DESCR2                                          VARCHAR(40)                                           
+,REQ_GVT_PAR_DESCR3                                          VARCHAR(40)                                           
+,REQ_GVT_PAR_DESCR4                                          VARCHAR(40)                                           
+,REQ_GVT_PAR_DESCR5                                          VARCHAR(40) 
+,REQ_GVT_GEOLOC_CD                                           VARCHAR(9)   
+,REQ_GEOLOC_GVT_ST_CNTRY_DESCR                               VARCHAR(30)  
+,REQ_GEOLOC_CITY                                             VARCHAR(30)  
+,REQ_GEOLOC_STATE                                            VARCHAR(6)   
+,REQ_GEOLOC_COUNTY                                           VARCHAR(30)  
+,REQ_GEOLOC_COUNTRY                                          VARCHAR(3)   
+,REQ_GEOLOC_GSA_REGION                                       VARCHAR(2)   
+,REQ_GEOLOC_GSA_REGION_DESCR                                 VARCHAR(120) 
+,REQ_GVT_MSA                                                 VARCHAR(5)   
+,REQ_GVT_CMSA                                                VARCHAR(3)   
+,REQ_GVT_LEOPAY_AREA                                         VARCHAR(1)   
+,REQ_GVT_LEOPAY_AREA_EFFDT                                   DATE         
+,REQ_GVT_LEOPAY_AREA_DESCR                                   VARCHAR(30)  
+,REQ_GVT_LEO_PCT                                             DECIMAL(4,2) 
+,REQ_GVT_LOCALITY_AREA                                       VARCHAR(2)   
+,REQ_GVT_LOCALITY_AREA_EFFDT                                 DATE         
+,REQ_GVT_LOCALITY_AREA_DESCR                                 VARCHAR(30)  
+,REQ_GVT_LOCALITY_PCT                                        DECIMAL(4,2) 
+,REQ_GVT_IGA_PCT                                             DECIMAL(4,2) 
+,REQ_NFCOLA_PERCENT                                          DECIMAL(22,4)      
+,REQ_Z_POSITION_EFFDT                                        DATE 
+,REQ_Z_POSITION_TRANS_TYPE                                   VARCHAR(30)  
+,REQ_Z_POSITION_TRANSACTION_NBR                              VARCHAR(30) 
+,REQ_Z_POSITION_CADW_TRANSACTION_NBR                         VARCHAR(30) 
+,REQ_Z_POSITION_Z_PD_FUNC                                    VARCHAR(15)                                           
+,REQ_Z_POSITION_Z_ACCT_CD                                    VARCHAR(35)                                           
+,REQ_POS_ACTION                                              VARCHAR(3) 
+,REQ_POS_ACTION_REASON                                       VARCHAR(3)
+,REQ_POS_EFFDT                                               DATE 
+,REQ_POS_GVT_PAY_PLAN                                        VARCHAR(2)                                          
+,REQ_POS_GRADE                                               VARCHAR(3)                                          
+,REQ_POS_GVT_TARGET_GRADE                                    VARCHAR(2)                                          
+,REQ_POS_SUPV_LVL_ID                                         VARCHAR(8)                                            
+,REQ_POS_SUPV_LVL_ID_DESCR                                   VARCHAR(60)                                           
+,REQ_POS_DESCRLONG                                           VARCHAR(255)                                          
+,REQ_POS_DESCRSHORT                                          VARCHAR(10)                                           
+,REQ_POS_DESCR                                               VARCHAR(30)                                           
+,REQ_POS_GVT_POSN_SENS_CD                                    VARCHAR(1)                                            
+,REQ_POS_GVT_POSN_SENS_CD_DESCR                              VARCHAR(60)                                           
+,REQ_POS_GVT_OCC_SERIES                                      VARCHAR(4)                                            
+,REQ_POS_GVT_OCC_SERIES_DESCR40                              VARCHAR(40)                                           
+,REQ_POS_GVT_OCC_SERIES_DESCR70                              VARCHAR(70)                                           
+,REQ_POS_GVT_OCC_SERIES_PATCOB_CD                            VARCHAR(1)                                            
+,REQ_POS_GVT_OCC_SERIES_PATCOB_CD_DESCR                      VARCHAR(120)                                          
+,REQ_POS_GVT_OCC_SERIES_FUNC_CLASS_REQ                       VARCHAR(1)                                            
+,REQ_POS_MCO_GROUP                                           VARCHAR(120)                                          
+,REQ_POS_MCO_ABBREVIATION                                    VARCHAR(120)                                          
+,REQ_POS_OCCUPATIONAL_SERIES_GROUP                           VARCHAR(120)                                          
+,REQ_POS_BPR_GROUP                                           VARCHAR(120)                                          
+,REQ_POS_MCO_OCO_MSO_TYPE                                    VARCHAR(120)                                          
+,REQ_POS_MISSION_FUNCTIONAL_GROUP                            VARCHAR(120)                                          
+,REQ_POS_GVT_ORG_TTL_DESCR                                   VARCHAR(120)                
+,REQ_POS_GVT_ORG_TTL_CD                                      VARCHAR(120) 
+,REQ_POS_GSA_EXECUTIVE_RESOURCES_FLAG	                       VARCHAR(1) 
+,REQ_POS_INVESTIGATION_TYPE                                  VARCHAR(30) 
+,REQ_POS_INVESTIGATION_TYPE_DESCR                            VARCHAR(255) 
+,REQ_POS_STAFFING_INVESTIGATION_TYPE                         VARCHAR(30) 
+,REQ_Z_ALT_HIRE_MGR_OPRID                                    VARCHAR(30)                     
+,REQ_Z_ALT_HIRE_MGR_EMPLID                                   VARCHAR(11) 
+,REQ_Z_ALT_HIRE_MGR_EMPL_NAME                                VARCHAR(255)                     
+,REQ_Z_ALT_HIRE_MGR_EMAILID                                  VARCHAR(100)                    
+,REQ_Z_ADMIN_POC_OPRID                                       VARCHAR(30)                     
+,REQ_Z_ADMIN_POC_EMPLID                                      VARCHAR(11)                     
+,REQ_Z_ADMIN_POC_EMPL_NAME                                   VARCHAR(255)                     
+,REQ_Z_ADMIN_POC_EMAILID                                     VARCHAR(100)                    
+,REQ_Z_HR_SPECIALIST_OPRID                                   VARCHAR(30)                     
+,REQ_Z_HR_SPECIALIST_EMPLID                                  VARCHAR(11)                     
+,REQ_Z_HR_SPECIALIST_EMPL_NAME                               VARCHAR(255)                     
+,REQ_Z_HR_SPECIALIST_EMAILID                                 VARCHAR(100)                    
+,REQ_Z_NRC_SPECIALIST_OPRID                                  VARCHAR(30)                     
+,REQ_Z_NRC_SPECIALIST_EMPLID                                 VARCHAR(11)                     
+,REQ_Z_NRC_SPECIALIST_EMPL_NAME                              VARCHAR(255)                     
+,REQ_Z_NRC_SPECIALIST_EMAILID                                VARCHAR(100)        
+,REQ_RECRUIT_ORIGINATOR_NAME                                 VARCHAR(255)     
+,REQ_RECRUIT_ORIGINATOR_EMAILID                              VARCHAR(100)          
+,REQ_REPORTS_TO_GVT_WIP_STATUS                               VARCHAR(3)                  
+,REQ_REPORTS_TO_GVT_WIP_STATUS_DESCR                         VARCHAR(80)                  
+,REQ_REPORTS_TO_GVT_STATUS_TYPE                              VARCHAR(3)   
+,REQ_REPORTS_TO_GVT_STATUS_TYPE_DESCR                        VARCHAR(80)   
+,REQ_REPORTS_TO_GVT_NOA_CODE                                 VARCHAR(4)   
+,REQ_REPORTS_TO_EFFDT                                        DATE 
+,REQ_REPORTS_TO_EFFSEQ                                       BIGINT
+,ACTION_GVT_NOA_CODE                                         VARCHAR(4)   
+,ACTION_GVT_WIP_STATUS                                       VARCHAR(3)                  
+,ACTION_GVT_WIP_STATUS_DESCR                                 VARCHAR(80)                  
+,ACTION_GVT_STATUS_TYPE                                      VARCHAR(3)   
+,ACTION_GVT_STATUS_TYPE_DESCR                                VARCHAR(80)  
+,ACTION_EMPLID                                               VARCHAR(11)      
+,ACTION_EMPL_RCD                                         BIGINT 
+,ACTION_EFFDT                                            DATE 
+,ACTION_EFFSEQ                                           BIGINT 
+,SF50_TRANSACTION_CONTROL_ID                             BIGINT
+,CADW_SF50_TRANSACTION_STATUS                            VARCHAR(15)  
+,CADW_CREATED_BY                                         VARCHAR(500)    NOT NULL
+,CADW_CREATION_DATE                                      DATETIME        NOT NULL
+,CADW_LAST_UPDATE_DATE                                   DATETIME        NOT NULL
+,CADW_LAST_UPDATED_BY                                    VARCHAR(500)    NOT NULL 
+)  ENCRYPTION='Y';     
+                                                
+  		 
+CREATE UNIQUE INDEX NHRDW_SF52_REQUESTS_UNQ_IDX_1	ON NHRDW_SF52_REQUESTS   (CADW_TRANSACTION_NBR);                                                       
+CREATE UNIQUE INDEX NHRDW_SF52_REQUESTS_UNQ_IDX_2	ON NHRDW_SF52_REQUESTS   (TRANSACTION_TYPE,TRANSACTION_NBR);                                                                                
+CREATE        INDEX NHRDW_SF52_REQUESTS_NUNQ_IDX_1	ON NHRDW_SF52_REQUESTS   (REQ_POSITION_NBR,REQUEST_DT);        
+
+CREATE        INDEX NHRDW_SF52_REQUESTS_NUNQ_IDX_2	ON NHRDW_SF52_REQUESTS   (SF50_TRANSACTION_CONTROL_ID);        
+CREATE        INDEX NHRDW_SF52_REQUESTS_NUNQ_IDX_3	ON NHRDW_SF52_REQUESTS   (ACTION_EMPLID,ACTION_EMPL_RCD,ACTION_EFFDT,ACTION_EFFSEQ);        
+ 

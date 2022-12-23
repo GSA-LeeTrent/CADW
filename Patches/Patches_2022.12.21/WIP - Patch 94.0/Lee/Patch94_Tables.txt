@@ -1,0 +1,617 @@
+USE new_hrdw;
+           	                         
+ CREATE OR REPLACE VIEW `new_hrdw`.`nhrdw_hrlinks_employee_all_history` AS select `job`.`EMPLID` AS `EMPLID`,`job`.`EMPL_RCD` AS `EMPL_RCD`,`job`.`EFFSEQ` AS `EFFSEQ`,`job`.`EFFDT` AS `EFFDT`,`job`.`GVT_WIP_STATUS` AS `GVT_WIP_STATUS`,`job`.`GVT_NOA_CODE` AS `GVT_NOA_CODE`,`job`.`GVT_STATUS_TYPE` AS `GVT_STATUS_TYPE`,`job`.`GVT_SF52_NBR` AS `GVT_SF52_NBR`,`job`.`EMPL_STATUS` AS `EMPL_STATUS`,`job`.`SETID_DEPT` AS `SETID_DEPT`,`pers`.`NAME` AS `NAME`,`job`.`POSITION_ENTRY_DT` AS `POSITION_ENTRY_DT`,`job`.`POSITION_NBR` AS `POSITION_NBR`,`job`.`REPORTS_TO` AS `REPORTS_TO`,`job`.`GVT_STEP` AS `GVT_STEP`,`job`.`GVT_PAY_PLAN` AS `GVT_PAY_PLAN`,`bemail`.`EMAIL_ADDR` AS `EMAIL_ADDR`,coalesce(`empl`.`REHIRE_DT`,`empl`.`HIRE_DT`) AS `LATEST_HIRE_DATE` from ((((`new_hrdw`.`ps_gvt_job` `job` join `new_hrdw`.`ps_gvt_pers_data` `pers` on(((`pers`.`EMPLID` = `job`.`EMPLID`) and (`pers`.`EMPL_RCD` = `job`.`EMPL_RCD`) and (`pers`.`EFFSEQ` = `job`.`EFFSEQ`) and (`pers`.`EFFDT` = `job`.`EFFDT`)))) join `new_hrdw`.`ps_gvt_pers_nid` `nid` on(((`nid`.`EMPLID` = `job`.`EMPLID`) and (`nid`.`EMPL_RCD` = `job`.`EMPL_RCD`) and (`nid`.`EFFSEQ` = `job`.`EFFSEQ`) and (`nid`.`EFFDT` = `job`.`EFFDT`)))) join `new_hrdw`.`ps_gvt_employment` `empl` on(((`empl`.`EMPLID` = `job`.`EMPLID`) and (`empl`.`EMPL_RCD` = `job`.`EMPL_RCD`) and (`empl`.`EFFSEQ` = `job`.`EFFSEQ`) and (`empl`.`EFFDT` = `job`.`EFFDT`)))) left join `new_hrdw`.`ps_email_addresses` `bemail` on(((`bemail`.`EMPLID` = `job`.`EMPLID`) and (`bemail`.`E_ADDR_TYPE` = 'BUSN')))) where (`job`.`GVT_WIP_STATUS` in ('PRO','COR','INI','REQ'));
+               	                          
+CREATE OR REPLACE VIEW `new_hrdw`.`nhrdw_hrlinks_employee_completed_history` AS select `job`.`EMPLID` AS `EMPLID`,`job`.`EMPL_RCD` AS `EMPL_RCD`,`job`.`EFFSEQ` AS `EFFSEQ`,`job`.`EFFDT` AS `EFFDT`,`job`.`GVT_WIP_STATUS` AS `GVT_WIP_STATUS`,`job`.`GVT_NOA_CODE` AS `GVT_NOA_CODE`,`job`.`GVT_STATUS_TYPE` AS `GVT_STATUS_TYPE`,`job`.`GVT_SF52_NBR` AS `GVT_SF52_NBR`,`job`.`EMPL_STATUS` AS `EMPL_STATUS`,`job`.`SETID_DEPT` AS `SETID_DEPT`,`pers`.`NAME` AS `NAME`,`job`.`POSITION_ENTRY_DT` AS `POSITION_ENTRY_DT`,`job`.`POSITION_NBR` AS `POSITION_NBR`,`job`.`REPORTS_TO` AS `REPORTS_TO`,`job`.`GVT_STEP` AS `GVT_STEP`,`job`.`GVT_PAY_PLAN` AS `GVT_PAY_PLAN`,`bemail`.`EMAIL_ADDR` AS `EMAIL_ADDR`,coalesce(`empl`.`REHIRE_DT`,`empl`.`HIRE_DT`) AS `LATEST_HIRE_DATE` from ((((`new_hrdw`.`ps_gvt_job` `job` join `new_hrdw`.`ps_gvt_pers_data` `pers` on(((`pers`.`EMPLID` = `job`.`EMPLID`) and (`pers`.`EMPL_RCD` = `job`.`EMPL_RCD`) and (`pers`.`EFFSEQ` = `job`.`EFFSEQ`) and (`pers`.`EFFDT` = `job`.`EFFDT`)))) join `new_hrdw`.`ps_gvt_pers_nid` `nid` on(((`nid`.`EMPLID` = `job`.`EMPLID`) and (`nid`.`EMPL_RCD` = `job`.`EMPL_RCD`) and (`nid`.`EFFSEQ` = `job`.`EFFSEQ`) and (`nid`.`EFFDT` = `job`.`EFFDT`)))) join `new_hrdw`.`ps_gvt_employment` `empl` on(((`empl`.`EMPLID` = `job`.`EMPLID`) and (`empl`.`EMPL_RCD` = `job`.`EMPL_RCD`) and (`empl`.`EFFSEQ` = `job`.`EFFSEQ`) and (`empl`.`EFFDT` = `job`.`EFFDT`)))) left join `new_hrdw`.`ps_email_addresses` `bemail` on(((`bemail`.`EMPLID` = `job`.`EMPLID`) and (`bemail`.`E_ADDR_TYPE` = 'BUSN')))) where (`job`.`GVT_WIP_STATUS` in ('PRO','COR'));
+
+DROP TABLE IF EXISTS NEW_HRDW.NHRDW_SF52_REQUESTS;
+
+CREATE TABLE `nhrdw_sf52_requests` (
+  `NHRDW_SF52_MSS_REQUEST_ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `CADW_TRANSACTION_NBR` varchar(30) NOT NULL,
+  `TRANSACTION_TYPE` varchar(4) NOT NULL,
+  `TRANSACTION_NBR` bigint(20) NOT NULL,
+  `TRANSACTION_STATUS_CODE` varchar(10) NOT NULL,
+  `TRANSACTION_STATUS_DESCR` varchar(30) NOT NULL,
+  `REQ_POSITION_NBR` varchar(8) DEFAULT NULL,
+  `REQUEST_DT` datetime DEFAULT NULL,
+  `REQ_ACTION_DT_SS` datetime DEFAULT NULL,
+  `REQ_FOURDIGIT_FISCAL_YEAR_OF_REQUEST_DT` int(8) DEFAULT NULL,
+  `REQ_FISCAL_YEAR_ACTION_REQUEST_DT` varchar(4) DEFAULT NULL,
+  `REQ_FOURDIGIT_FISCAL_YEAR_OF_APPR_DT` int(8) DEFAULT NULL,
+  `REQ_FISCAL_YEAR_ACTION_APPR_DT` varchar(4) DEFAULT NULL,
+  `REQ_ACTION` varchar(3) NOT NULL,
+  `REQ_ACTION_REASON` varchar(3) NOT NULL,
+  `REQ_DEPTID` varchar(10) DEFAULT NULL,
+  `REQ_LOCATION` varchar(10) DEFAULT NULL,
+  `REQ_REPORTS_TO` varchar(8) DEFAULT NULL,
+  `REQ_REPORTS_TO_EMPLID` varchar(11) DEFAULT NULL,
+  `REQ_REPORTS_TO_EMPL_RCD` bigint(20) DEFAULT NULL,
+  `REQ_REPORTS_TO_EMPL_NAME` varchar(255) DEFAULT NULL,
+  `REQ_REPORTS_TO_EMAIL_ADDR` varchar(255) DEFAULT NULL,
+  `REQ_GVT_WORK_SCHED` varchar(1) DEFAULT NULL,
+  `REQ_STD_HOURS` decimal(6,2) DEFAULT NULL,
+  `REQ_Z_PD_FUNC` varchar(15) DEFAULT NULL,
+  `REQ_GVT_POI` varchar(4) DEFAULT NULL,
+  `REQ_GVT_POI_DESCR` varchar(255) DEFAULT NULL,
+  `REQ_Z_ACCT_CD` varchar(35) DEFAULT NULL,
+  `REQ_Z_PD_CSBASEID` varchar(80) DEFAULT NULL,
+  `REQ_BARG_UNIT` varchar(4) DEFAULT NULL,
+  `REQ_REG_TEMP` varchar(1) DEFAULT NULL,
+  `REQ_Z_NOTIFY_ROLE` varchar(1) DEFAULT NULL,
+  `REQ_Z_PD_FUNC2` varchar(15) DEFAULT NULL,
+  `REQ_POSN_DESCR` varchar(30) DEFAULT NULL,
+  `REQ_DATE1` datetime DEFAULT NULL,
+  `REQ_DATE2` datetime DEFAULT NULL,
+  `REQ_DATE3` datetime DEFAULT NULL,
+  `REQ_DATE4` datetime DEFAULT NULL,
+  `REQ_TRANSACTION_NAME` varchar(25) NOT NULL,
+  `REQ_WF_STATUS` varchar(1) NOT NULL,
+  `REQ_UPD_BY_USERID` varchar(30) NOT NULL,
+  `REQ_UPD_DTTM` datetime DEFAULT NULL,
+  `REQ_ORIGINATOR_ID` varchar(11) DEFAULT NULL,
+  `REQ_CREATED_DTTM` datetime DEFAULT NULL,
+  `REQ_COMMENTS` longtext,
+  `REQ_FULL_PART_TIME` varchar(1) DEFAULT NULL,
+  `REQ_Z_MSS_GRADE` varchar(10) DEFAULT NULL,
+  `REQ_FTE` decimal(7,6) DEFAULT NULL,
+  `REQ_BUDGETED_POSN` varchar(1) DEFAULT NULL,
+  `REQ_POSN_STATUS` varchar(1) DEFAULT NULL,
+  `REQ_GVT_ORG_TTL_DESCR` varchar(70) DEFAULT NULL,
+  `REQ_EMPLID` varchar(11) DEFAULT NULL,
+  `REQ_EMPL_RCD` bigint(20) DEFAULT NULL,
+  `REQ_EFFSEQ` bigint(20) DEFAULT NULL,
+  `REQ_NEW_EFFDT` datetime DEFAULT NULL,
+  `REQ_EFF_STATUS` varchar(1) DEFAULT NULL,
+  `REQ_BUSINESS_UNIT` varchar(5) DEFAULT NULL,
+  `REQ_JOBCODE` varchar(6) DEFAULT NULL,
+  `REQ_SUPV_LVL_ID` varchar(8) DEFAULT NULL,
+  `REQ_GVT_PAY_PLAN` varchar(2) DEFAULT NULL,
+  `REQ_SAL_ADMIN_PLAN` varchar(4) DEFAULT NULL,
+  `REQ_GVT_OCC_SERIES` varchar(4) DEFAULT NULL,
+  `REQ_GVT_ORG_TTL_CD` varchar(4) DEFAULT NULL,
+  `REQ_GVT_POSN_OCCUPIED` varchar(1) DEFAULT NULL,
+  `REQ_GVT_COMP_LEVEL` varchar(4) DEFAULT NULL,
+  `REQ_GVT_TARGET_GRADE` varchar(2) DEFAULT NULL,
+  `REQ_GRADE` varchar(3) DEFAULT NULL,
+  `REQ_Z_AWARD_AMT` varchar(8) DEFAULT NULL,
+  `REQ_Z_AWARD_HRS` varchar(2) DEFAULT NULL,
+  `REQ_GVT_NOA_CODE` varchar(4) DEFAULT NULL,
+  `REQ_GVT_PAR_NTE_DATE` datetime DEFAULT NULL,
+  `REQ_STEP` bigint(20) DEFAULT NULL,
+  `REQ_MSS_REC_Z_RECRUIT_IND` varchar(1) DEFAULT NULL,
+  `REQ_MSS_REC_Z_RECRUIT_INIT` varchar(1) DEFAULT NULL,
+  `REQ_MSS_REC_Z_RECRUIT_CANCEL` varchar(1) DEFAULT NULL,
+  `REQ_MSS_REC_CREATEDTTM` datetime DEFAULT NULL,
+  `REQ_MSS_REC_CREATEOPRID` varchar(30) DEFAULT NULL,
+  `REQ_MSS_REC_LASTUPDDTTM` datetime DEFAULT NULL,
+  `REQ_MSS_REC_LASTUPDOPRID` varchar(30) DEFAULT NULL,
+  `REQ_XREF_EOAWTHREAD_ID` bigint(20) DEFAULT NULL,
+  `REQ_XREF_EOAWPRCS_ID` varchar(30) DEFAULT NULL,
+  `REQ_XREF_EOAWDEFN_ID` varchar(30) DEFAULT NULL,
+  `REQ_XREF_ORIGINATORID` varchar(30) DEFAULT NULL,
+  `REQ_XREF_EOAWREQUESTOR_ID` varchar(30) DEFAULT NULL,
+  `REQ_XREF_RECNAME` varchar(15) DEFAULT NULL,
+  `REQ_XREF_EOAWTHREAD_STATUS` varchar(1) DEFAULT NULL,
+  `REQ_XREF_EOAWPARENT_THREAD` bigint(20) DEFAULT NULL,
+  `REQ_XREF_EOAWDTTM_MODIFIED` datetime DEFAULT NULL,
+  `REQ_XREF_COMMENTS` longtext,
+  `REQ_APPR_AUDIT_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_APPR_AUDIT_STAMP` datetime DEFAULT NULL,
+  `REQ_APPR_AUDIT_ACTN` varchar(1) DEFAULT NULL,
+  `REQ_LATEST_AUDIT_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_LATEST_AUDIT_STAMP` datetime DEFAULT NULL,
+  `REQ_LATEST_AUDIT_ACTN` varchar(1) DEFAULT NULL,
+  `REQ_REC_APPR_AUDIT_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_REC_APPR_AUDIT_STAMP` datetime DEFAULT NULL,
+  `REQ_REC_APPR_AUDIT_ACTN` varchar(1) DEFAULT NULL,
+  `REQ_REC_CANCEL_AUDIT_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_REC_CANCEL_AUDIT_STAMP` datetime DEFAULT NULL,
+  `REQ_REC_CANCEL_AUDIT_ACTN` varchar(1) DEFAULT NULL,
+  `REQ_REC_LATEST_AUDIT_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_REC_LATEST_AUDIT_STAMP` datetime DEFAULT NULL,
+  `REQ_REC_LATEST_AUDIT_ACTN` varchar(1) DEFAULT NULL,
+  `REQ_REC_LATEST_APPR_AUDIT_STAMP` datetime DEFAULT NULL,
+  `REQ_GSA_DEPT_REGION` varchar(10) DEFAULT NULL,
+  `REQ_DEPT_BUSINESS_LINE` varchar(30) DEFAULT NULL,
+  `REQ_DEPT_DESCR` varchar(40) DEFAULT NULL,
+  `REQ_DEPT_GVT_DESCR40` varchar(40) DEFAULT NULL,
+  `REQ_GVT_PAR_LINE2` varchar(10) DEFAULT NULL,
+  `REQ_GVT_PAR_LINE3` varchar(10) DEFAULT NULL,
+  `REQ_GVT_PAR_LINE4` varchar(10) DEFAULT NULL,
+  `REQ_GVT_PAR_LINE5` varchar(10) DEFAULT NULL,
+  `REQ_GVT_PAR_DESCR2` varchar(40) DEFAULT NULL,
+  `REQ_GVT_PAR_DESCR3` varchar(40) DEFAULT NULL,
+  `REQ_GVT_PAR_DESCR4` varchar(40) DEFAULT NULL,
+  `REQ_GVT_PAR_DESCR5` varchar(40) DEFAULT NULL,
+  `REQ_GVT_GEOLOC_CD` varchar(9) DEFAULT NULL,
+  `REQ_GEOLOC_GVT_ST_CNTRY_DESCR` varchar(30) DEFAULT NULL,
+  `REQ_GEOLOC_CITY` varchar(30) DEFAULT NULL,
+  `REQ_GEOLOC_STATE` varchar(6) DEFAULT NULL,
+  `REQ_GEOLOC_COUNTY` varchar(30) DEFAULT NULL,
+  `REQ_GEOLOC_COUNTRY` varchar(3) DEFAULT NULL,
+  `REQ_GEOLOC_GSA_REGION` varchar(2) DEFAULT NULL,
+  `REQ_GEOLOC_GSA_REGION_DESCR` varchar(120) DEFAULT NULL,
+  `REQ_GVT_MSA` varchar(5) DEFAULT NULL,
+  `REQ_GVT_CMSA` varchar(3) DEFAULT NULL,
+  `REQ_GVT_LEOPAY_AREA` varchar(1) DEFAULT NULL,
+  `REQ_GVT_LEOPAY_AREA_EFFDT` date DEFAULT NULL,
+  `REQ_GVT_LEOPAY_AREA_DESCR` varchar(30) DEFAULT NULL,
+  `REQ_GVT_LEO_PCT` decimal(4,2) DEFAULT NULL,
+  `REQ_GVT_LOCALITY_AREA` varchar(2) DEFAULT NULL,
+  `REQ_GVT_LOCALITY_AREA_EFFDT` date DEFAULT NULL,
+  `REQ_GVT_LOCALITY_AREA_DESCR` varchar(30) DEFAULT NULL,
+  `REQ_GVT_LOCALITY_PCT` decimal(4,2) DEFAULT NULL,
+  `REQ_GVT_IGA_PCT` decimal(4,2) DEFAULT NULL,
+  `REQ_NFCOLA_PERCENT` decimal(22,4) DEFAULT NULL,
+  `REQ_Z_POSITION_EFFDT` date DEFAULT NULL,
+  `REQ_Z_POSITION_TRANS_TYPE` varchar(30) DEFAULT NULL,
+  `REQ_Z_POSITION_TRANSACTION_NBR` varchar(30) DEFAULT NULL,
+  `REQ_Z_POSITION_CADW_TRANSACTION_NBR` varchar(30) DEFAULT NULL,
+  `REQ_Z_POSITION_Z_PD_FUNC` varchar(15) DEFAULT NULL,
+  `REQ_Z_POSITION_Z_ACCT_CD` varchar(35) DEFAULT NULL,
+  `REQ_POS_ACTION` varchar(3) DEFAULT NULL,
+  `REQ_POS_ACTION_REASON` varchar(3) DEFAULT NULL,
+  `REQ_POS_EFFDT` date DEFAULT NULL,
+  `REQ_POS_GVT_PAY_PLAN` varchar(2) DEFAULT NULL,
+  `REQ_POS_GRADE` varchar(3) DEFAULT NULL,
+  `REQ_POS_GVT_TARGET_GRADE` varchar(2) DEFAULT NULL,
+  `REQ_POS_SUPV_LVL_ID` varchar(8) DEFAULT NULL,
+  `REQ_POS_SUPV_LVL_ID_DESCR` varchar(60) DEFAULT NULL,
+  `REQ_POS_DESCRLONG` varchar(255) DEFAULT NULL,
+  `REQ_POS_DESCRSHORT` varchar(10) DEFAULT NULL,
+  `REQ_POS_DESCR` varchar(30) DEFAULT NULL,
+  `REQ_POS_GVT_POSN_SENS_CD` varchar(1) DEFAULT NULL,
+  `REQ_POS_GVT_POSN_SENS_CD_DESCR` varchar(60) DEFAULT NULL,
+  `REQ_POS_GVT_OCC_SERIES` varchar(4) DEFAULT NULL,
+  `REQ_POS_GVT_OCC_SERIES_DESCR40` varchar(40) DEFAULT NULL,
+  `REQ_POS_GVT_OCC_SERIES_DESCR70` varchar(70) DEFAULT NULL,
+  `REQ_POS_GVT_OCC_SERIES_PATCOB_CD` varchar(1) DEFAULT NULL,
+  `REQ_POS_GVT_OCC_SERIES_PATCOB_CD_DESCR` varchar(120) DEFAULT NULL,
+  `REQ_POS_GVT_OCC_SERIES_FUNC_CLASS_REQ` varchar(1) DEFAULT NULL,
+  `REQ_POS_MCO_GROUP` varchar(120) DEFAULT NULL,
+  `REQ_POS_MCO_ABBREVIATION` varchar(120) DEFAULT NULL,
+  `REQ_POS_OCCUPATIONAL_SERIES_GROUP` varchar(120) DEFAULT NULL,
+  `REQ_POS_BPR_GROUP` varchar(120) DEFAULT NULL,
+  `REQ_POS_MCO_OCO_MSO_TYPE` varchar(120) DEFAULT NULL,
+  `REQ_POS_MISSION_FUNCTIONAL_GROUP` varchar(120) DEFAULT NULL,
+  `REQ_POS_GVT_ORG_TTL_DESCR` varchar(120) DEFAULT NULL,
+  `REQ_POS_GVT_ORG_TTL_CD` varchar(120) DEFAULT NULL,
+  `REQ_POS_GSA_EXECUTIVE_RESOURCES_FLAG` varchar(1) DEFAULT NULL,
+  `REQ_POS_INVESTIGATION_TYPE` varchar(30) DEFAULT NULL,
+  `REQ_POS_INVESTIGATION_TYPE_DESCR` varchar(255) DEFAULT NULL,
+  `REQ_POS_STAFFING_INVESTIGATION_TYPE` varchar(30) DEFAULT NULL,
+  `REQ_Z_ALT_HIRE_MGR_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_Z_ALT_HIRE_MGR_EMPLID` varchar(11) DEFAULT NULL,
+  `REQ_Z_ALT_HIRE_MGR_EMPL_NAME` varchar(255) DEFAULT NULL,
+  `REQ_Z_ALT_HIRE_MGR_EMAILID` varchar(100) DEFAULT NULL,
+  `REQ_Z_ADMIN_POC_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_Z_ADMIN_POC_EMPLID` varchar(11) DEFAULT NULL,
+  `REQ_Z_ADMIN_POC_EMPL_NAME` varchar(255) DEFAULT NULL,
+  `REQ_Z_ADMIN_POC_EMAILID` varchar(100) DEFAULT NULL,
+  `REQ_Z_HR_SPECIALIST_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_Z_HR_SPECIALIST_EMPLID` varchar(11) DEFAULT NULL,
+  `REQ_Z_HR_SPECIALIST_EMPL_NAME` varchar(255) DEFAULT NULL,
+  `REQ_Z_HR_SPECIALIST_EMAILID` varchar(100) DEFAULT NULL,
+  `REQ_Z_NRC_SPECIALIST_OPRID` varchar(30) DEFAULT NULL,
+  `REQ_Z_NRC_SPECIALIST_EMPLID` varchar(11) DEFAULT NULL,
+  `REQ_Z_NRC_SPECIALIST_EMPL_NAME` varchar(255) DEFAULT NULL,
+  `REQ_Z_NRC_SPECIALIST_EMAILID` varchar(100) DEFAULT NULL,
+  `REQ_REPORTS_TO_GVT_WIP_STATUS` varchar(3) DEFAULT NULL,
+  `REQ_REPORTS_TO_GVT_WIP_STATUS_DESCR` varchar(80) DEFAULT NULL,
+  `REQ_REPORTS_TO_GVT_STATUS_TYPE` varchar(3) DEFAULT NULL,
+  `REQ_REPORTS_TO_GVT_STATUS_TYPE_DESCR` varchar(80) DEFAULT NULL,
+  `REQ_REPORTS_TO_GVT_NOA_CODE` varchar(4) DEFAULT NULL,
+  `REQ_REPORTS_TO_EFFDT` date DEFAULT NULL,
+  `REQ_REPORTS_TO_EFFSEQ` bigint(20) DEFAULT NULL,
+  `ACTION_GVT_NOA_CODE` varchar(4) DEFAULT NULL,
+  `ACTION_GVT_WIP_STATUS` varchar(3) DEFAULT NULL,
+  `ACTION_GVT_WIP_STATUS_DESCR` varchar(80) DEFAULT NULL,
+  `ACTION_GVT_STATUS_TYPE` varchar(3) DEFAULT NULL,
+  `ACTION_GVT_STATUS_TYPE_DESCR` varchar(80) DEFAULT NULL,
+  `ACTION_EMPLID` varchar(11) DEFAULT NULL,
+  `ACTION_EMPL_RCD` bigint(20) DEFAULT NULL,
+  `ACTION_EFFDT` date DEFAULT NULL,
+  `ACTION_EFFSEQ` bigint(20) DEFAULT NULL,
+  `SF50_TRANSACTION_CONTROL_ID` bigint(20) DEFAULT NULL,
+  `CADW_SF50_TRANSACTION_STATUS` varchar(15) DEFAULT NULL,
+  `CADW_CREATED_BY` varchar(500) NOT NULL,
+  `CADW_CREATION_DATE` datetime NOT NULL,
+  `CADW_LAST_UPDATE_DATE` datetime NOT NULL,
+  `CADW_LAST_UPDATED_BY` varchar(500) NOT NULL,
+  PRIMARY KEY (`NHRDW_SF52_MSS_REQUEST_ID`),
+  UNIQUE KEY `NHRDW_SF52_REQUESTS_UNQ_IDX_1` (`CADW_TRANSACTION_NBR`),
+  UNIQUE KEY `NHRDW_SF52_REQUESTS_UNQ_IDX_2` (`TRANSACTION_TYPE`,`TRANSACTION_NBR`),
+  KEY `NHRDW_SF52_REQUESTS_NUNQ_IDX_1` (`REQ_POSITION_NBR`,`REQUEST_DT`),
+  KEY `NHRDW_SF52_REQUESTS_NUNQ_IDX_2` (`SF50_TRANSACTION_CONTROL_ID`),
+  KEY `NHRDW_SF52_REQUESTS_NUNQ_IDX_3` (`ACTION_EMPLID`,`ACTION_EMPL_RCD`,`ACTION_EFFDT`,`ACTION_EFFSEQ`)
+) ENGINE=InnoDB AUTO_INCREMENT=28670 DEFAULT CHARSET=latin1 ENCRYPTION='Y';
+
+
+DELIMITER //  
+
+CREATE TRIGGER NHRDW_SF52_REQUESTS_WHO_INSERT                                                        
+BEFORE INSERT ON NHRDW_SF52_REQUESTS FOR EACH ROW                                                                                                        
+BEGIN                                                                                                                                                    
+DECLARE                                                                                                                                                  
+                                                                                                                                                         
+  l_sysdate datetime default CURRENT_TIMESTAMP;                                                                                                          
+  if  new.cadw_created_by    is null and                                                                                                                
+      new.cadw_creation_date is null then                                                                                                                
+      set new.cadw_created_by      := user();                                                                                                            
+      set new.cadw_creation_date   := l_sysdate;                                                                                                        
+   end if;                                                                                                                                              
+                                                                                                                                                         
+  set new.cadw_last_update_date  := l_sysdate;                                                                                                          
+  set new.cadw_last_updated_by   := user();                                                                                                              
+                                                                                                                                                         
+   if new.CADW_TRANSACTION_NBR                                             =   ' ' then set  new.CADW_TRANSACTION_NBR                                             :=   null;  end if;
+   if new.TRANSACTION_TYPE                                                 =   ' ' then set  new.TRANSACTION_TYPE                                                 :=   null;  end if;
+   if new.TRANSACTION_STATUS_CODE                                          =   ' ' then set  new.TRANSACTION_STATUS_CODE                                          :=   null;  end if;
+   if new.TRANSACTION_STATUS_DESCR                                         =   ' ' then set  new.TRANSACTION_STATUS_DESCR                                         :=   null;  end if;
+   if new.REQ_POSITION_NBR                                                 =   ' ' then set  new.REQ_POSITION_NBR                                                 :=   null;  end if;
+   if new.REQ_FISCAL_YEAR_ACTION_REQUEST_DT                                =   ' ' then set  new.REQ_FISCAL_YEAR_ACTION_REQUEST_DT                                :=   null;  end if;
+   if new.REQ_FISCAL_YEAR_ACTION_APPR_DT                                   =   ' ' then set  new.REQ_FISCAL_YEAR_ACTION_APPR_DT                                   :=   null;  end if;
+   if new.REQ_ACTION                                                       =   ' ' then set  new.REQ_ACTION                                                       :=   null;  end if;
+   if new.REQ_ACTION_REASON                                                =   ' ' then set  new.REQ_ACTION_REASON                                                :=   null;  end if;
+   if new.REQ_DEPTID                                                       =   ' ' then set  new.REQ_DEPTID                                                       :=   null;  end if;
+   if new.REQ_LOCATION                                                     =   ' ' then set  new.REQ_LOCATION                                                     :=   null;  end if;
+   if new.REQ_REPORTS_TO                                                   =   ' ' then set  new.REQ_REPORTS_TO                                                   :=   null;  end if;
+   if new.REQ_REPORTS_TO_EMPLID                                            =   ' ' then set  new.REQ_REPORTS_TO_EMPLID                                            :=   null;  end if;
+   if new.REQ_REPORTS_TO_EMPL_NAME                                         =   ' ' then set  new.REQ_REPORTS_TO_EMPL_NAME                                         :=   null;  end if;
+   if new.REQ_REPORTS_TO_EMAIL_ADDR                                        =   ' ' then set  new.REQ_REPORTS_TO_EMAIL_ADDR                                        :=   null;  end if;
+   if new.REQ_GVT_WORK_SCHED                                               =   ' ' then set  new.REQ_GVT_WORK_SCHED                                               :=   null;  end if;
+   if new.REQ_Z_PD_FUNC                                                    =   ' ' then set  new.REQ_Z_PD_FUNC                                                    :=   null;  end if;
+   if new.REQ_GVT_POI                                                      =   ' ' then set  new.REQ_GVT_POI                                                      :=   null;  end if;
+   if new.REQ_GVT_POI_DESCR                                                =   ' ' then set  new.REQ_GVT_POI_DESCR                                                :=   null;  end if;
+   if new.REQ_Z_ACCT_CD                                                    =   ' ' then set  new.REQ_Z_ACCT_CD                                                    :=   null;  end if;
+   if new.REQ_Z_PD_CSBASEID                                                =   ' ' then set  new.REQ_Z_PD_CSBASEID                                                :=   null;  end if;
+   if new.REQ_BARG_UNIT                                                    =   ' ' then set  new.REQ_BARG_UNIT                                                    :=   null;  end if;
+   if new.REQ_REG_TEMP                                                     =   ' ' then set  new.REQ_REG_TEMP                                                     :=   null;  end if;
+   if new.REQ_Z_NOTIFY_ROLE                                                =   ' ' then set  new.REQ_Z_NOTIFY_ROLE                                                :=   null;  end if;
+   if new.REQ_Z_PD_FUNC2                                                   =   ' ' then set  new.REQ_Z_PD_FUNC2                                                   :=   null;  end if;
+   if new.REQ_POSN_DESCR                                                   =   ' ' then set  new.REQ_POSN_DESCR                                                   :=   null;  end if;
+   if new.REQ_TRANSACTION_NAME                                             =   ' ' then set  new.REQ_TRANSACTION_NAME                                             :=   null;  end if;
+   if new.REQ_WF_STATUS                                                    =   ' ' then set  new.REQ_WF_STATUS                                                    :=   null;  end if;
+   if new.REQ_UPD_BY_USERID                                                =   ' ' then set  new.REQ_UPD_BY_USERID                                                :=   null;  end if;
+   if new.REQ_ORIGINATOR_ID                                                =   ' ' then set  new.REQ_ORIGINATOR_ID                                                :=   null;  end if;
+   if new.REQ_FULL_PART_TIME                                               =   ' ' then set  new.REQ_FULL_PART_TIME                                               :=   null;  end if;
+   if new.REQ_Z_MSS_GRADE                                                  =   ' ' then set  new.REQ_Z_MSS_GRADE                                                  :=   null;  end if;
+   if new.REQ_BUDGETED_POSN                                                =   ' ' then set  new.REQ_BUDGETED_POSN                                                :=   null;  end if;
+   if new.REQ_POSN_STATUS                                                  =   ' ' then set  new.REQ_POSN_STATUS                                                  :=   null;  end if;
+   if new.REQ_GVT_ORG_TTL_DESCR                                            =   ' ' then set  new.REQ_GVT_ORG_TTL_DESCR                                            :=   null;  end if;
+   if new.REQ_EMPLID                                                       =   ' ' then set  new.REQ_EMPLID                                                       :=   null;  end if;
+   if new.REQ_EFF_STATUS                                                   =   ' ' then set  new.REQ_EFF_STATUS                                                   :=   null;  end if;
+   if new.REQ_BUSINESS_UNIT                                                =   ' ' then set  new.REQ_BUSINESS_UNIT                                                :=   null;  end if;
+   if new.REQ_JOBCODE                                                      =   ' ' then set  new.REQ_JOBCODE                                                      :=   null;  end if;
+   if new.REQ_SUPV_LVL_ID                                                  =   ' ' then set  new.REQ_SUPV_LVL_ID                                                  :=   null;  end if;
+   if new.REQ_GVT_PAY_PLAN                                                 =   ' ' then set  new.REQ_GVT_PAY_PLAN                                                 :=   null;  end if;
+   if new.REQ_SAL_ADMIN_PLAN                                               =   ' ' then set  new.REQ_SAL_ADMIN_PLAN                                               :=   null;  end if;
+   if new.REQ_GVT_OCC_SERIES                                               =   ' ' then set  new.REQ_GVT_OCC_SERIES                                               :=   null;  end if;
+   if new.REQ_GVT_ORG_TTL_CD                                               =   ' ' then set  new.REQ_GVT_ORG_TTL_CD                                               :=   null;  end if;
+   if new.REQ_GVT_POSN_OCCUPIED                                            =   ' ' then set  new.REQ_GVT_POSN_OCCUPIED                                            :=   null;  end if;
+   if new.REQ_GVT_COMP_LEVEL                                               =   ' ' then set  new.REQ_GVT_COMP_LEVEL                                               :=   null;  end if;
+   if new.REQ_GVT_TARGET_GRADE                                             =   ' ' then set  new.REQ_GVT_TARGET_GRADE                                             :=   null;  end if;
+   if new.REQ_GRADE                                                        =   ' ' then set  new.REQ_GRADE                                                        :=   null;  end if;
+   if new.REQ_Z_AWARD_AMT                                                  =   ' ' then set  new.REQ_Z_AWARD_AMT                                                  :=   null;  end if;
+   if new.REQ_Z_AWARD_HRS                                                  =   ' ' then set  new.REQ_Z_AWARD_HRS                                                  :=   null;  end if;
+   if new.REQ_GVT_NOA_CODE                                                 =   ' ' then set  new.REQ_GVT_NOA_CODE                                                 :=   null;  end if;
+   if new.REQ_MSS_REC_Z_RECRUIT_IND                                        =   ' ' then set  new.REQ_MSS_REC_Z_RECRUIT_IND                                        :=   null;  end if;
+   if new.REQ_MSS_REC_Z_RECRUIT_INIT                                       =   ' ' then set  new.REQ_MSS_REC_Z_RECRUIT_INIT                                       :=   null;  end if;
+   if new.REQ_MSS_REC_Z_RECRUIT_CANCEL                                     =   ' ' then set  new.REQ_MSS_REC_Z_RECRUIT_CANCEL                                     :=   null;  end if;
+   if new.REQ_MSS_REC_CREATEOPRID                                          =   ' ' then set  new.REQ_MSS_REC_CREATEOPRID                                          :=   null;  end if;
+   if new.REQ_MSS_REC_LASTUPDOPRID                                         =   ' ' then set  new.REQ_MSS_REC_LASTUPDOPRID                                         :=   null;  end if;
+   if new.REQ_XREF_EOAWPRCS_ID                                             =   ' ' then set  new.REQ_XREF_EOAWPRCS_ID                                             :=   null;  end if;
+   if new.REQ_XREF_EOAWDEFN_ID                                             =   ' ' then set  new.REQ_XREF_EOAWDEFN_ID                                             :=   null;  end if;
+   if new.REQ_XREF_ORIGINATORID                                            =   ' ' then set  new.REQ_XREF_ORIGINATORID                                            :=   null;  end if;
+   if new.REQ_XREF_EOAWREQUESTOR_ID                                        =   ' ' then set  new.REQ_XREF_EOAWREQUESTOR_ID                                        :=   null;  end if;
+   if new.REQ_XREF_RECNAME                                                 =   ' ' then set  new.REQ_XREF_RECNAME                                                 :=   null;  end if;
+   if new.REQ_XREF_EOAWTHREAD_STATUS                                       =   ' ' then set  new.REQ_XREF_EOAWTHREAD_STATUS                                       :=   null;  end if;
+   if new.REQ_APPR_AUDIT_OPRID                                             =   ' ' then set  new.REQ_APPR_AUDIT_OPRID                                             :=   null;  end if;
+   if new.REQ_APPR_AUDIT_ACTN                                              =   ' ' then set  new.REQ_APPR_AUDIT_ACTN                                              :=   null;  end if;
+   if new.REQ_LATEST_AUDIT_OPRID                                           =   ' ' then set  new.REQ_LATEST_AUDIT_OPRID                                           :=   null;  end if;
+   if new.REQ_LATEST_AUDIT_ACTN                                            =   ' ' then set  new.REQ_LATEST_AUDIT_ACTN                                            :=   null;  end if;
+   if new.REQ_REC_APPR_AUDIT_OPRID                                         =   ' ' then set  new.REQ_REC_APPR_AUDIT_OPRID                                         :=   null;  end if;
+   if new.REQ_REC_APPR_AUDIT_ACTN                                          =   ' ' then set  new.REQ_REC_APPR_AUDIT_ACTN                                          :=   null;  end if;
+   if new.REQ_REC_CANCEL_AUDIT_OPRID                                       =   ' ' then set  new.REQ_REC_CANCEL_AUDIT_OPRID                                       :=   null;  end if;
+   if new.REQ_REC_CANCEL_AUDIT_ACTN                                        =   ' ' then set  new.REQ_REC_CANCEL_AUDIT_ACTN                                        :=   null;  end if;
+   if new.REQ_REC_LATEST_AUDIT_OPRID                                       =   ' ' then set  new.REQ_REC_LATEST_AUDIT_OPRID                                       :=   null;  end if;
+   if new.REQ_REC_LATEST_AUDIT_ACTN                                        =   ' ' then set  new.REQ_REC_LATEST_AUDIT_ACTN                                        :=   null;  end if;
+   if new.REQ_GSA_DEPT_REGION                                              =   ' ' then set  new.REQ_GSA_DEPT_REGION                                              :=   null;  end if;
+   if new.REQ_DEPT_BUSINESS_LINE                                           =   ' ' then set  new.REQ_DEPT_BUSINESS_LINE                                           :=   null;  end if;
+   if new.REQ_DEPT_DESCR                                                   =   ' ' then set  new.REQ_DEPT_DESCR                                                   :=   null;  end if;
+   if new.REQ_DEPT_GVT_DESCR40                                             =   ' ' then set  new.REQ_DEPT_GVT_DESCR40                                             :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE2                                                =   ' ' then set  new.REQ_GVT_PAR_LINE2                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE3                                                =   ' ' then set  new.REQ_GVT_PAR_LINE3                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE4                                                =   ' ' then set  new.REQ_GVT_PAR_LINE4                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE5                                                =   ' ' then set  new.REQ_GVT_PAR_LINE5                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR2                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR2                                               :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR3                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR3                                               :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR4                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR4                                               :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR5                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR5                                               :=   null;  end if;
+   if new.REQ_GVT_GEOLOC_CD                                                =   ' ' then set  new.REQ_GVT_GEOLOC_CD                                                :=   null;  end if;
+   if new.REQ_GEOLOC_GVT_ST_CNTRY_DESCR                                    =   ' ' then set  new.REQ_GEOLOC_GVT_ST_CNTRY_DESCR                                    :=   null;  end if;
+   if new.REQ_GEOLOC_CITY                                                  =   ' ' then set  new.REQ_GEOLOC_CITY                                                  :=   null;  end if;
+   if new.REQ_GEOLOC_STATE                                                 =   ' ' then set  new.REQ_GEOLOC_STATE                                                 :=   null;  end if;
+   if new.REQ_GEOLOC_COUNTY                                                =   ' ' then set  new.REQ_GEOLOC_COUNTY                                                :=   null;  end if;
+   if new.REQ_GEOLOC_COUNTRY                                               =   ' ' then set  new.REQ_GEOLOC_COUNTRY                                               :=   null;  end if;
+   if new.REQ_GEOLOC_GSA_REGION                                            =   ' ' then set  new.REQ_GEOLOC_GSA_REGION                                            :=   null;  end if;
+   if new.REQ_GEOLOC_GSA_REGION_DESCR                                      =   ' ' then set  new.REQ_GEOLOC_GSA_REGION_DESCR                                      :=   null;  end if;
+   if new.REQ_GVT_MSA                                                      =   ' ' then set  new.REQ_GVT_MSA                                                      :=   null;  end if;
+   if new.REQ_GVT_CMSA                                                     =   ' ' then set  new.REQ_GVT_CMSA                                                     :=   null;  end if;
+   if new.REQ_GVT_LEOPAY_AREA                                              =   ' ' then set  new.REQ_GVT_LEOPAY_AREA                                              :=   null;  end if;
+   if new.REQ_GVT_LEOPAY_AREA_DESCR                                        =   ' ' then set  new.REQ_GVT_LEOPAY_AREA_DESCR                                        :=   null;  end if;
+   if new.REQ_GVT_LOCALITY_AREA                                            =   ' ' then set  new.REQ_GVT_LOCALITY_AREA                                            :=   null;  end if;
+   if new.REQ_GVT_LOCALITY_AREA_DESCR                                      =   ' ' then set  new.REQ_GVT_LOCALITY_AREA_DESCR                                      :=   null;  end if;
+   if new.REQ_Z_POSITION_TRANS_TYPE                                        =   ' ' then set  new.REQ_Z_POSITION_TRANS_TYPE                                        :=   null;  end if;
+   if new.REQ_Z_POSITION_TRANSACTION_NBR                                   =   ' ' then set  new.REQ_Z_POSITION_TRANSACTION_NBR                                   :=   null;  end if;
+   if new.REQ_Z_POSITION_CADW_TRANSACTION_NBR                              =   ' ' then set  new.REQ_Z_POSITION_CADW_TRANSACTION_NBR                              :=   null;  end if;
+   if new.REQ_Z_POSITION_Z_PD_FUNC                                         =   ' ' then set  new.REQ_Z_POSITION_Z_PD_FUNC                                         :=   null;  end if;
+   if new.REQ_Z_POSITION_Z_ACCT_CD                                         =   ' ' then set  new.REQ_Z_POSITION_Z_ACCT_CD                                         :=   null;  end if;
+   if new.REQ_POS_ACTION                                                   =   ' ' then set  new.REQ_POS_ACTION                                                   :=   null;  end if;
+   if new.REQ_POS_ACTION_REASON                                            =   ' ' then set  new.REQ_POS_ACTION_REASON                                            :=   null;  end if;
+   if new.REQ_POS_GVT_PAY_PLAN                                             =   ' ' then set  new.REQ_POS_GVT_PAY_PLAN                                             :=   null;  end if;
+   if new.REQ_POS_GRADE                                                    =   ' ' then set  new.REQ_POS_GRADE                                                    :=   null;  end if;
+   if new.REQ_POS_GVT_TARGET_GRADE                                         =   ' ' then set  new.REQ_POS_GVT_TARGET_GRADE                                         :=   null;  end if;
+   if new.REQ_POS_SUPV_LVL_ID                                              =   ' ' then set  new.REQ_POS_SUPV_LVL_ID                                              :=   null;  end if;
+   if new.REQ_POS_SUPV_LVL_ID_DESCR                                        =   ' ' then set  new.REQ_POS_SUPV_LVL_ID_DESCR                                        :=   null;  end if;
+   if new.REQ_POS_DESCRLONG                                                =   ' ' then set  new.REQ_POS_DESCRLONG                                                :=   null;  end if;
+   if new.REQ_POS_DESCRSHORT                                               =   ' ' then set  new.REQ_POS_DESCRSHORT                                               :=   null;  end if;
+   if new.REQ_POS_DESCR                                                    =   ' ' then set  new.REQ_POS_DESCR                                                    :=   null;  end if;
+   if new.REQ_POS_GVT_POSN_SENS_CD                                         =   ' ' then set  new.REQ_POS_GVT_POSN_SENS_CD                                         :=   null;  end if;
+   if new.REQ_POS_GVT_POSN_SENS_CD_DESCR                                   =   ' ' then set  new.REQ_POS_GVT_POSN_SENS_CD_DESCR                                   :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES                                           =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES                                           :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_DESCR40                                   =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_DESCR40                                   :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_DESCR70                                   =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_DESCR70                                   :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD                                 =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD                                 :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD_DESCR                           =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD_DESCR                           :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_FUNC_CLASS_REQ                            =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_FUNC_CLASS_REQ                            :=   null;  end if;
+   if new.REQ_POS_MCO_GROUP                                                =   ' ' then set  new.REQ_POS_MCO_GROUP                                                :=   null;  end if;
+   if new.REQ_POS_MCO_ABBREVIATION                                         =   ' ' then set  new.REQ_POS_MCO_ABBREVIATION                                         :=   null;  end if;
+   if new.REQ_POS_OCCUPATIONAL_SERIES_GROUP                                =   ' ' then set  new.REQ_POS_OCCUPATIONAL_SERIES_GROUP                                :=   null;  end if;
+   if new.REQ_POS_BPR_GROUP                                                =   ' ' then set  new.REQ_POS_BPR_GROUP                                                :=   null;  end if;
+   if new.REQ_POS_MCO_OCO_MSO_TYPE                                         =   ' ' then set  new.REQ_POS_MCO_OCO_MSO_TYPE                                         :=   null;  end if;
+   if new.REQ_POS_MISSION_FUNCTIONAL_GROUP                                 =   ' ' then set  new.REQ_POS_MISSION_FUNCTIONAL_GROUP                                 :=   null;  end if;
+   if new.REQ_POS_GVT_ORG_TTL_DESCR                                        =   ' ' then set  new.REQ_POS_GVT_ORG_TTL_DESCR                                        :=   null;  end if;
+   if new.REQ_POS_GVT_ORG_TTL_CD                                           =   ' ' then set  new.REQ_POS_GVT_ORG_TTL_CD                                           :=   null;  end if;
+   if new.REQ_POS_GSA_EXECUTIVE_RESOURCES_FLAG                             =   ' ' then set  new.REQ_POS_GSA_EXECUTIVE_RESOURCES_FLAG                             :=   null;  end if;
+   if new.REQ_POS_INVESTIGATION_TYPE                                       =   ' ' then set  new.REQ_POS_INVESTIGATION_TYPE                                       :=   null;  end if;
+   if new.REQ_POS_INVESTIGATION_TYPE_DESCR                                 =   ' ' then set  new.REQ_POS_INVESTIGATION_TYPE_DESCR                                 :=   null;  end if;
+   if new.REQ_POS_STAFFING_INVESTIGATION_TYPE                              =   ' ' then set  new.REQ_POS_STAFFING_INVESTIGATION_TYPE                              :=   null;  end if;
+   if new.REQ_Z_ALT_HIRE_MGR_OPRID                                         =   ' ' then set  new.REQ_Z_ALT_HIRE_MGR_OPRID                                         :=   null;  end if;
+   if new.REQ_Z_ALT_HIRE_MGR_EMPLID                                        =   ' ' then set  new.REQ_Z_ALT_HIRE_MGR_EMPLID                                        :=   null;  end if;
+   if new.REQ_Z_ALT_HIRE_MGR_EMAILID                                       =   ' ' then set  new.REQ_Z_ALT_HIRE_MGR_EMAILID                                       :=   null;  end if;
+   if new.REQ_Z_ADMIN_POC_OPRID                                            =   ' ' then set  new.REQ_Z_ADMIN_POC_OPRID                                            :=   null;  end if;
+   if new.REQ_Z_ADMIN_POC_EMPLID                                           =   ' ' then set  new.REQ_Z_ADMIN_POC_EMPLID                                           :=   null;  end if;
+   if new.REQ_Z_ADMIN_POC_EMAILID                                          =   ' ' then set  new.REQ_Z_ADMIN_POC_EMAILID                                          :=   null;  end if;
+   if new.REQ_Z_HR_SPECIALIST_OPRID                                        =   ' ' then set  new.REQ_Z_HR_SPECIALIST_OPRID                                        :=   null;  end if;
+   if new.REQ_Z_HR_SPECIALIST_EMPLID                                       =   ' ' then set  new.REQ_Z_HR_SPECIALIST_EMPLID                                       :=   null;  end if;
+   if new.REQ_Z_HR_SPECIALIST_EMAILID                                      =   ' ' then set  new.REQ_Z_HR_SPECIALIST_EMAILID                                      :=   null;  end if;
+   if new.REQ_Z_NRC_SPECIALIST_OPRID                                       =   ' ' then set  new.REQ_Z_NRC_SPECIALIST_OPRID                                       :=   null;  end if;
+   if new.REQ_Z_NRC_SPECIALIST_EMPLID                                      =   ' ' then set  new.REQ_Z_NRC_SPECIALIST_EMPLID                                      :=   null;  end if;
+   if new.REQ_Z_NRC_SPECIALIST_EMAILID                                     =   ' ' then set  new.REQ_Z_NRC_SPECIALIST_EMAILID                                     :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_WIP_STATUS                                    =   ' ' then set  new.REQ_REPORTS_TO_GVT_WIP_STATUS                                    :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_WIP_STATUS_DESCR                              =   ' ' then set  new.REQ_REPORTS_TO_GVT_WIP_STATUS_DESCR                              :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_STATUS_TYPE                                   =   ' ' then set  new.REQ_REPORTS_TO_GVT_STATUS_TYPE                                   :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_STATUS_TYPE_DESCR                             =   ' ' then set  new.REQ_REPORTS_TO_GVT_STATUS_TYPE_DESCR                             :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_NOA_CODE                                      =   ' ' then set  new.REQ_REPORTS_TO_GVT_NOA_CODE                                      :=   null;  end if;
+   if new.ACTION_GVT_NOA_CODE                                              =   ' ' then set  new.ACTION_GVT_NOA_CODE                                              :=   null;  end if;
+   if new.ACTION_GVT_WIP_STATUS                                            =   ' ' then set  new.ACTION_GVT_WIP_STATUS                                            :=   null;  end if;
+   if new.ACTION_GVT_WIP_STATUS_DESCR                                      =   ' ' then set  new.ACTION_GVT_WIP_STATUS_DESCR                                      :=   null;  end if;
+   if new.ACTION_GVT_STATUS_TYPE                                           =   ' ' then set  new.ACTION_GVT_STATUS_TYPE                                           :=   null;  end if;
+   if new.ACTION_GVT_STATUS_TYPE_DESCR                                     =   ' ' then set  new.ACTION_GVT_STATUS_TYPE_DESCR                                     :=   null;  end if;
+   if new.ACTION_EMPLID                                                    =   ' ' then set  new.ACTION_EMPLID                                                    :=   null;  end if;
+
+   if new.TRANSACTION_TYPE in ('NEW','PUF')
+   then
+
+     set new.REQ_REC_LATEST_APPR_AUDIT_STAMP := COALESCE(new.REQ_REC_LATEST_APPR_AUDIT_STAMP,new.REQ_REC_APPR_AUDIT_STAMP) ;
+
+     if new.REQ_REC_LATEST_APPR_AUDIT_STAMP is not null
+     then
+         set new.REQ_FOURDIGIT_FISCAL_YEAR_OF_APPR_DT     := YEAR(DATE_FORMAT(DATE_ADD( new.REQ_REC_LATEST_APPR_AUDIT_STAMP ,INTERVAL 3 MONTH) ,'%Y-09-30')) ;
+         set new.REQ_FISCAL_YEAR_ACTION_APPR_DT           := CONCAT('FY',SUBSTR(YEAR(DATE_FORMAT(new.REQ_REC_LATEST_APPR_AUDIT_STAMP ,'%Y-09-30')),3,2)) ;
+     end if;
+   else
+         set new.REQ_FOURDIGIT_FISCAL_YEAR_OF_APPR_DT     := YEAR(DATE_FORMAT(DATE_ADD( new.REQ_ACTION_DT_SS ,INTERVAL 3 MONTH) ,'%Y-09-30')) ;
+         set new.REQ_FISCAL_YEAR_ACTION_APPR_DT           := CONCAT('FY',SUBSTR(YEAR(DATE_FORMAT(new.REQ_ACTION_DT_SS ,'%Y-09-30')),3,2)) ;
+   end if;
+                                                                                                                                                                                                           END;
+
+//                                                                                                                                                                                  
+DELIMITER ; 
+
+DELIMITER //
+
+CREATE DEFINER=`HRDWCORPDATA`@`%` TRIGGER NHRDW_SF52_REQUESTS_WHO_UPDATE                                                        
+BEFORE UPDATE ON NHRDW_SF52_REQUESTS FOR EACH ROW                                                                                                        
+BEGIN                                                                                                                                                    
+DECLARE                                                                                                                                                  
+                                                                                                                                                         
+  l_sysdate datetime default CURRENT_TIMESTAMP;                                                                                                          
+  if  new.cadw_created_by    is null and                                                                                                                
+      new.cadw_creation_date is null then                                                                                                                
+      set new.cadw_created_by      := user();                                                                                                            
+      set new.cadw_creation_date   := l_sysdate;                                                                                                        
+   end if;                                                                                                                                              
+                                                                                                                                                         
+  set new.cadw_last_update_date  := l_sysdate;                                                                                                          
+  set new.cadw_last_updated_by   := user();                                                                                                              
+
+
+
+   if new.CADW_TRANSACTION_NBR                                             =   ' ' then set  new.CADW_TRANSACTION_NBR                                             :=   null;  end if;
+   if new.TRANSACTION_TYPE                                                 =   ' ' then set  new.TRANSACTION_TYPE                                                 :=   null;  end if;
+   if new.TRANSACTION_STATUS_CODE                                          =   ' ' then set  new.TRANSACTION_STATUS_CODE                                          :=   null;  end if;
+   if new.TRANSACTION_STATUS_DESCR                                         =   ' ' then set  new.TRANSACTION_STATUS_DESCR                                         :=   null;  end if;
+   if new.REQ_POSITION_NBR                                                 =   ' ' then set  new.REQ_POSITION_NBR                                                 :=   null;  end if;
+   if new.REQ_FISCAL_YEAR_ACTION_REQUEST_DT                                =   ' ' then set  new.REQ_FISCAL_YEAR_ACTION_REQUEST_DT                                :=   null;  end if;
+   if new.REQ_FISCAL_YEAR_ACTION_APPR_DT                                   =   ' ' then set  new.REQ_FISCAL_YEAR_ACTION_APPR_DT                                   :=   null;  end if;
+   if new.REQ_ACTION                                                       =   ' ' then set  new.REQ_ACTION                                                       :=   null;  end if;
+   if new.REQ_ACTION_REASON                                                =   ' ' then set  new.REQ_ACTION_REASON                                                :=   null;  end if;
+   if new.REQ_DEPTID                                                       =   ' ' then set  new.REQ_DEPTID                                                       :=   null;  end if;
+   if new.REQ_LOCATION                                                     =   ' ' then set  new.REQ_LOCATION                                                     :=   null;  end if;
+   if new.REQ_REPORTS_TO                                                   =   ' ' then set  new.REQ_REPORTS_TO                                                   :=   null;  end if;
+   if new.REQ_REPORTS_TO_EMPLID                                            =   ' ' then set  new.REQ_REPORTS_TO_EMPLID                                            :=   null;  end if;
+   if new.REQ_REPORTS_TO_EMPL_NAME                                         =   ' ' then set  new.REQ_REPORTS_TO_EMPL_NAME                                         :=   null;  end if;
+   if new.REQ_REPORTS_TO_EMAIL_ADDR                                        =   ' ' then set  new.REQ_REPORTS_TO_EMAIL_ADDR                                        :=   null;  end if;
+   if new.REQ_GVT_WORK_SCHED                                               =   ' ' then set  new.REQ_GVT_WORK_SCHED                                               :=   null;  end if;
+   if new.REQ_Z_PD_FUNC                                                    =   ' ' then set  new.REQ_Z_PD_FUNC                                                    :=   null;  end if;
+   if new.REQ_GVT_POI                                                      =   ' ' then set  new.REQ_GVT_POI                                                      :=   null;  end if;
+   if new.REQ_GVT_POI_DESCR                                                =   ' ' then set  new.REQ_GVT_POI_DESCR                                                :=   null;  end if;
+   if new.REQ_Z_ACCT_CD                                                    =   ' ' then set  new.REQ_Z_ACCT_CD                                                    :=   null;  end if;
+   if new.REQ_Z_PD_CSBASEID                                                =   ' ' then set  new.REQ_Z_PD_CSBASEID                                                :=   null;  end if;
+   if new.REQ_BARG_UNIT                                                    =   ' ' then set  new.REQ_BARG_UNIT                                                    :=   null;  end if;
+   if new.REQ_REG_TEMP                                                     =   ' ' then set  new.REQ_REG_TEMP                                                     :=   null;  end if;
+   if new.REQ_Z_NOTIFY_ROLE                                                =   ' ' then set  new.REQ_Z_NOTIFY_ROLE                                                :=   null;  end if;
+   if new.REQ_Z_PD_FUNC2                                                   =   ' ' then set  new.REQ_Z_PD_FUNC2                                                   :=   null;  end if;
+   if new.REQ_POSN_DESCR                                                   =   ' ' then set  new.REQ_POSN_DESCR                                                   :=   null;  end if;
+   if new.REQ_TRANSACTION_NAME                                             =   ' ' then set  new.REQ_TRANSACTION_NAME                                             :=   null;  end if;
+   if new.REQ_WF_STATUS                                                    =   ' ' then set  new.REQ_WF_STATUS                                                    :=   null;  end if;
+   if new.REQ_UPD_BY_USERID                                                =   ' ' then set  new.REQ_UPD_BY_USERID                                                :=   null;  end if;
+   if new.REQ_ORIGINATOR_ID                                                =   ' ' then set  new.REQ_ORIGINATOR_ID                                                :=   null;  end if;
+   if new.REQ_FULL_PART_TIME                                               =   ' ' then set  new.REQ_FULL_PART_TIME                                               :=   null;  end if;
+   if new.REQ_Z_MSS_GRADE                                                  =   ' ' then set  new.REQ_Z_MSS_GRADE                                                  :=   null;  end if;
+   if new.REQ_BUDGETED_POSN                                                =   ' ' then set  new.REQ_BUDGETED_POSN                                                :=   null;  end if;
+   if new.REQ_POSN_STATUS                                                  =   ' ' then set  new.REQ_POSN_STATUS                                                  :=   null;  end if;
+   if new.REQ_GVT_ORG_TTL_DESCR                                            =   ' ' then set  new.REQ_GVT_ORG_TTL_DESCR                                            :=   null;  end if;
+   if new.REQ_EMPLID                                                       =   ' ' then set  new.REQ_EMPLID                                                       :=   null;  end if;
+   if new.REQ_EFF_STATUS                                                   =   ' ' then set  new.REQ_EFF_STATUS                                                   :=   null;  end if;
+   if new.REQ_BUSINESS_UNIT                                                =   ' ' then set  new.REQ_BUSINESS_UNIT                                                :=   null;  end if;
+   if new.REQ_JOBCODE                                                      =   ' ' then set  new.REQ_JOBCODE                                                      :=   null;  end if;
+   if new.REQ_SUPV_LVL_ID                                                  =   ' ' then set  new.REQ_SUPV_LVL_ID                                                  :=   null;  end if;
+   if new.REQ_GVT_PAY_PLAN                                                 =   ' ' then set  new.REQ_GVT_PAY_PLAN                                                 :=   null;  end if;
+   if new.REQ_SAL_ADMIN_PLAN                                               =   ' ' then set  new.REQ_SAL_ADMIN_PLAN                                               :=   null;  end if;
+   if new.REQ_GVT_OCC_SERIES                                               =   ' ' then set  new.REQ_GVT_OCC_SERIES                                               :=   null;  end if;
+   if new.REQ_GVT_ORG_TTL_CD                                               =   ' ' then set  new.REQ_GVT_ORG_TTL_CD                                               :=   null;  end if;
+   if new.REQ_GVT_POSN_OCCUPIED                                            =   ' ' then set  new.REQ_GVT_POSN_OCCUPIED                                            :=   null;  end if;
+   if new.REQ_GVT_COMP_LEVEL                                               =   ' ' then set  new.REQ_GVT_COMP_LEVEL                                               :=   null;  end if;
+   if new.REQ_GVT_TARGET_GRADE                                             =   ' ' then set  new.REQ_GVT_TARGET_GRADE                                             :=   null;  end if;
+   if new.REQ_GRADE                                                        =   ' ' then set  new.REQ_GRADE                                                        :=   null;  end if;
+   if new.REQ_Z_AWARD_AMT                                                  =   ' ' then set  new.REQ_Z_AWARD_AMT                                                  :=   null;  end if;
+   if new.REQ_Z_AWARD_HRS                                                  =   ' ' then set  new.REQ_Z_AWARD_HRS                                                  :=   null;  end if;
+   if new.REQ_GVT_NOA_CODE                                                 =   ' ' then set  new.REQ_GVT_NOA_CODE                                                 :=   null;  end if;
+   if new.REQ_MSS_REC_Z_RECRUIT_IND                                        =   ' ' then set  new.REQ_MSS_REC_Z_RECRUIT_IND                                        :=   null;  end if;
+   if new.REQ_MSS_REC_Z_RECRUIT_INIT                                       =   ' ' then set  new.REQ_MSS_REC_Z_RECRUIT_INIT                                       :=   null;  end if;
+   if new.REQ_MSS_REC_Z_RECRUIT_CANCEL                                     =   ' ' then set  new.REQ_MSS_REC_Z_RECRUIT_CANCEL                                     :=   null;  end if;
+   if new.REQ_MSS_REC_CREATEOPRID                                          =   ' ' then set  new.REQ_MSS_REC_CREATEOPRID                                          :=   null;  end if;
+   if new.REQ_MSS_REC_LASTUPDOPRID                                         =   ' ' then set  new.REQ_MSS_REC_LASTUPDOPRID                                         :=   null;  end if;
+   if new.REQ_XREF_EOAWPRCS_ID                                             =   ' ' then set  new.REQ_XREF_EOAWPRCS_ID                                             :=   null;  end if;
+   if new.REQ_XREF_EOAWDEFN_ID                                             =   ' ' then set  new.REQ_XREF_EOAWDEFN_ID                                             :=   null;  end if;
+   if new.REQ_XREF_ORIGINATORID                                            =   ' ' then set  new.REQ_XREF_ORIGINATORID                                            :=   null;  end if;
+   if new.REQ_XREF_EOAWREQUESTOR_ID                                        =   ' ' then set  new.REQ_XREF_EOAWREQUESTOR_ID                                        :=   null;  end if;
+   if new.REQ_XREF_RECNAME                                                 =   ' ' then set  new.REQ_XREF_RECNAME                                                 :=   null;  end if;
+   if new.REQ_XREF_EOAWTHREAD_STATUS                                       =   ' ' then set  new.REQ_XREF_EOAWTHREAD_STATUS                                       :=   null;  end if;
+   if new.REQ_APPR_AUDIT_OPRID                                             =   ' ' then set  new.REQ_APPR_AUDIT_OPRID                                             :=   null;  end if;
+   if new.REQ_APPR_AUDIT_ACTN                                              =   ' ' then set  new.REQ_APPR_AUDIT_ACTN                                              :=   null;  end if;
+   if new.REQ_LATEST_AUDIT_OPRID                                           =   ' ' then set  new.REQ_LATEST_AUDIT_OPRID                                           :=   null;  end if;
+   if new.REQ_LATEST_AUDIT_ACTN                                            =   ' ' then set  new.REQ_LATEST_AUDIT_ACTN                                            :=   null;  end if;
+   if new.REQ_REC_APPR_AUDIT_OPRID                                         =   ' ' then set  new.REQ_REC_APPR_AUDIT_OPRID                                         :=   null;  end if;
+   if new.REQ_REC_APPR_AUDIT_ACTN                                          =   ' ' then set  new.REQ_REC_APPR_AUDIT_ACTN                                          :=   null;  end if;
+   if new.REQ_REC_CANCEL_AUDIT_OPRID                                       =   ' ' then set  new.REQ_REC_CANCEL_AUDIT_OPRID                                       :=   null;  end if;
+   if new.REQ_REC_CANCEL_AUDIT_ACTN                                        =   ' ' then set  new.REQ_REC_CANCEL_AUDIT_ACTN                                        :=   null;  end if;
+   if new.REQ_REC_LATEST_AUDIT_OPRID                                       =   ' ' then set  new.REQ_REC_LATEST_AUDIT_OPRID                                       :=   null;  end if;
+   if new.REQ_REC_LATEST_AUDIT_ACTN                                        =   ' ' then set  new.REQ_REC_LATEST_AUDIT_ACTN                                        :=   null;  end if;
+   if new.REQ_GSA_DEPT_REGION                                              =   ' ' then set  new.REQ_GSA_DEPT_REGION                                              :=   null;  end if;
+   if new.REQ_DEPT_BUSINESS_LINE                                           =   ' ' then set  new.REQ_DEPT_BUSINESS_LINE                                           :=   null;  end if;
+   if new.REQ_DEPT_DESCR                                                   =   ' ' then set  new.REQ_DEPT_DESCR                                                   :=   null;  end if;
+   if new.REQ_DEPT_GVT_DESCR40                                             =   ' ' then set  new.REQ_DEPT_GVT_DESCR40                                             :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE2                                                =   ' ' then set  new.REQ_GVT_PAR_LINE2                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE3                                                =   ' ' then set  new.REQ_GVT_PAR_LINE3                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE4                                                =   ' ' then set  new.REQ_GVT_PAR_LINE4                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_LINE5                                                =   ' ' then set  new.REQ_GVT_PAR_LINE5                                                :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR2                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR2                                               :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR3                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR3                                               :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR4                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR4                                               :=   null;  end if;
+   if new.REQ_GVT_PAR_DESCR5                                               =   ' ' then set  new.REQ_GVT_PAR_DESCR5                                               :=   null;  end if;
+   if new.REQ_GVT_GEOLOC_CD                                                =   ' ' then set  new.REQ_GVT_GEOLOC_CD                                                :=   null;  end if;
+   if new.REQ_GEOLOC_GVT_ST_CNTRY_DESCR                                    =   ' ' then set  new.REQ_GEOLOC_GVT_ST_CNTRY_DESCR                                    :=   null;  end if;
+   if new.REQ_GEOLOC_CITY                                                  =   ' ' then set  new.REQ_GEOLOC_CITY                                                  :=   null;  end if;
+   if new.REQ_GEOLOC_STATE                                                 =   ' ' then set  new.REQ_GEOLOC_STATE                                                 :=   null;  end if;
+   if new.REQ_GEOLOC_COUNTY                                                =   ' ' then set  new.REQ_GEOLOC_COUNTY                                                :=   null;  end if;
+   if new.REQ_GEOLOC_COUNTRY                                               =   ' ' then set  new.REQ_GEOLOC_COUNTRY                                               :=   null;  end if;
+   if new.REQ_GEOLOC_GSA_REGION                                            =   ' ' then set  new.REQ_GEOLOC_GSA_REGION                                            :=   null;  end if;
+   if new.REQ_GEOLOC_GSA_REGION_DESCR                                      =   ' ' then set  new.REQ_GEOLOC_GSA_REGION_DESCR                                      :=   null;  end if;
+   if new.REQ_GVT_MSA                                                      =   ' ' then set  new.REQ_GVT_MSA                                                      :=   null;  end if;
+   if new.REQ_GVT_CMSA                                                     =   ' ' then set  new.REQ_GVT_CMSA                                                     :=   null;  end if;
+   if new.REQ_GVT_LEOPAY_AREA                                              =   ' ' then set  new.REQ_GVT_LEOPAY_AREA                                              :=   null;  end if;
+   if new.REQ_GVT_LEOPAY_AREA_DESCR                                        =   ' ' then set  new.REQ_GVT_LEOPAY_AREA_DESCR                                        :=   null;  end if;
+   if new.REQ_GVT_LOCALITY_AREA                                            =   ' ' then set  new.REQ_GVT_LOCALITY_AREA                                            :=   null;  end if;
+   if new.REQ_GVT_LOCALITY_AREA_DESCR                                      =   ' ' then set  new.REQ_GVT_LOCALITY_AREA_DESCR                                      :=   null;  end if;
+   if new.REQ_Z_POSITION_TRANS_TYPE                                        =   ' ' then set  new.REQ_Z_POSITION_TRANS_TYPE                                        :=   null;  end if;
+   if new.REQ_Z_POSITION_TRANSACTION_NBR                                   =   ' ' then set  new.REQ_Z_POSITION_TRANSACTION_NBR                                   :=   null;  end if;
+   if new.REQ_Z_POSITION_CADW_TRANSACTION_NBR                              =   ' ' then set  new.REQ_Z_POSITION_CADW_TRANSACTION_NBR                              :=   null;  end if;
+   if new.REQ_Z_POSITION_Z_PD_FUNC                                         =   ' ' then set  new.REQ_Z_POSITION_Z_PD_FUNC                                         :=   null;  end if;
+   if new.REQ_Z_POSITION_Z_ACCT_CD                                         =   ' ' then set  new.REQ_Z_POSITION_Z_ACCT_CD                                         :=   null;  end if;
+   if new.REQ_POS_ACTION                                                   =   ' ' then set  new.REQ_POS_ACTION                                                   :=   null;  end if;
+   if new.REQ_POS_ACTION_REASON                                            =   ' ' then set  new.REQ_POS_ACTION_REASON                                            :=   null;  end if;
+   if new.REQ_POS_GVT_PAY_PLAN                                             =   ' ' then set  new.REQ_POS_GVT_PAY_PLAN                                             :=   null;  end if;
+   if new.REQ_POS_GRADE                                                    =   ' ' then set  new.REQ_POS_GRADE                                                    :=   null;  end if;
+   if new.REQ_POS_GVT_TARGET_GRADE                                         =   ' ' then set  new.REQ_POS_GVT_TARGET_GRADE                                         :=   null;  end if;
+   if new.REQ_POS_SUPV_LVL_ID                                              =   ' ' then set  new.REQ_POS_SUPV_LVL_ID                                              :=   null;  end if;
+   if new.REQ_POS_SUPV_LVL_ID_DESCR                                        =   ' ' then set  new.REQ_POS_SUPV_LVL_ID_DESCR                                        :=   null;  end if;
+   if new.REQ_POS_DESCRLONG                                                =   ' ' then set  new.REQ_POS_DESCRLONG                                                :=   null;  end if;
+   if new.REQ_POS_DESCRSHORT                                               =   ' ' then set  new.REQ_POS_DESCRSHORT                                               :=   null;  end if;
+   if new.REQ_POS_DESCR                                                    =   ' ' then set  new.REQ_POS_DESCR                                                    :=   null;  end if;
+   if new.REQ_POS_GVT_POSN_SENS_CD                                         =   ' ' then set  new.REQ_POS_GVT_POSN_SENS_CD                                         :=   null;  end if;
+   if new.REQ_POS_GVT_POSN_SENS_CD_DESCR                                   =   ' ' then set  new.REQ_POS_GVT_POSN_SENS_CD_DESCR                                   :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES                                           =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES                                           :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_DESCR40                                   =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_DESCR40                                   :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_DESCR70                                   =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_DESCR70                                   :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD                                 =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD                                 :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD_DESCR                           =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_PATCOB_CD_DESCR                           :=   null;  end if;
+   if new.REQ_POS_GVT_OCC_SERIES_FUNC_CLASS_REQ                            =   ' ' then set  new.REQ_POS_GVT_OCC_SERIES_FUNC_CLASS_REQ                            :=   null;  end if;
+   if new.REQ_POS_MCO_GROUP                                                =   ' ' then set  new.REQ_POS_MCO_GROUP                                                :=   null;  end if;
+   if new.REQ_POS_MCO_ABBREVIATION                                         =   ' ' then set  new.REQ_POS_MCO_ABBREVIATION                                         :=   null;  end if;
+   if new.REQ_POS_OCCUPATIONAL_SERIES_GROUP                                =   ' ' then set  new.REQ_POS_OCCUPATIONAL_SERIES_GROUP                                :=   null;  end if;
+   if new.REQ_POS_BPR_GROUP                                                =   ' ' then set  new.REQ_POS_BPR_GROUP                                                :=   null;  end if;
+   if new.REQ_POS_MCO_OCO_MSO_TYPE                                         =   ' ' then set  new.REQ_POS_MCO_OCO_MSO_TYPE                                         :=   null;  end if;
+   if new.REQ_POS_MISSION_FUNCTIONAL_GROUP                                 =   ' ' then set  new.REQ_POS_MISSION_FUNCTIONAL_GROUP                                 :=   null;  end if;
+   if new.REQ_POS_GVT_ORG_TTL_DESCR                                        =   ' ' then set  new.REQ_POS_GVT_ORG_TTL_DESCR                                        :=   null;  end if;
+   if new.REQ_POS_GVT_ORG_TTL_CD                                           =   ' ' then set  new.REQ_POS_GVT_ORG_TTL_CD                                           :=   null;  end if;
+   if new.REQ_POS_GSA_EXECUTIVE_RESOURCES_FLAG                             =   ' ' then set  new.REQ_POS_GSA_EXECUTIVE_RESOURCES_FLAG                             :=   null;  end if;
+   if new.REQ_POS_INVESTIGATION_TYPE                                       =   ' ' then set  new.REQ_POS_INVESTIGATION_TYPE                                       :=   null;  end if;
+   if new.REQ_POS_INVESTIGATION_TYPE_DESCR                                 =   ' ' then set  new.REQ_POS_INVESTIGATION_TYPE_DESCR                                 :=   null;  end if;
+   if new.REQ_POS_STAFFING_INVESTIGATION_TYPE                              =   ' ' then set  new.REQ_POS_STAFFING_INVESTIGATION_TYPE                              :=   null;  end if;
+   if new.REQ_Z_ALT_HIRE_MGR_OPRID                                         =   ' ' then set  new.REQ_Z_ALT_HIRE_MGR_OPRID                                         :=   null;  end if;
+   if new.REQ_Z_ALT_HIRE_MGR_EMPLID                                        =   ' ' then set  new.REQ_Z_ALT_HIRE_MGR_EMPLID                                        :=   null;  end if;
+   if new.REQ_Z_ALT_HIRE_MGR_EMAILID                                       =   ' ' then set  new.REQ_Z_ALT_HIRE_MGR_EMAILID                                       :=   null;  end if;
+   if new.REQ_Z_ADMIN_POC_OPRID                                            =   ' ' then set  new.REQ_Z_ADMIN_POC_OPRID                                            :=   null;  end if;
+   if new.REQ_Z_ADMIN_POC_EMPLID                                           =   ' ' then set  new.REQ_Z_ADMIN_POC_EMPLID                                           :=   null;  end if;
+   if new.REQ_Z_ADMIN_POC_EMAILID                                          =   ' ' then set  new.REQ_Z_ADMIN_POC_EMAILID                                          :=   null;  end if;
+   if new.REQ_Z_HR_SPECIALIST_OPRID                                        =   ' ' then set  new.REQ_Z_HR_SPECIALIST_OPRID                                        :=   null;  end if;
+   if new.REQ_Z_HR_SPECIALIST_EMPLID                                       =   ' ' then set  new.REQ_Z_HR_SPECIALIST_EMPLID                                       :=   null;  end if;
+   if new.REQ_Z_HR_SPECIALIST_EMAILID                                      =   ' ' then set  new.REQ_Z_HR_SPECIALIST_EMAILID                                      :=   null;  end if;
+   if new.REQ_Z_NRC_SPECIALIST_OPRID                                       =   ' ' then set  new.REQ_Z_NRC_SPECIALIST_OPRID                                       :=   null;  end if;
+   if new.REQ_Z_NRC_SPECIALIST_EMPLID                                      =   ' ' then set  new.REQ_Z_NRC_SPECIALIST_EMPLID                                      :=   null;  end if;
+   if new.REQ_Z_NRC_SPECIALIST_EMAILID                                     =   ' ' then set  new.REQ_Z_NRC_SPECIALIST_EMAILID                                     :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_WIP_STATUS                                    =   ' ' then set  new.REQ_REPORTS_TO_GVT_WIP_STATUS                                    :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_WIP_STATUS_DESCR                              =   ' ' then set  new.REQ_REPORTS_TO_GVT_WIP_STATUS_DESCR                              :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_STATUS_TYPE                                   =   ' ' then set  new.REQ_REPORTS_TO_GVT_STATUS_TYPE                                   :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_STATUS_TYPE_DESCR                             =   ' ' then set  new.REQ_REPORTS_TO_GVT_STATUS_TYPE_DESCR                             :=   null;  end if;
+   if new.REQ_REPORTS_TO_GVT_NOA_CODE                                      =   ' ' then set  new.REQ_REPORTS_TO_GVT_NOA_CODE                                      :=   null;  end if;
+   if new.ACTION_GVT_NOA_CODE                                              =   ' ' then set  new.ACTION_GVT_NOA_CODE                                              :=   null;  end if;
+   if new.ACTION_GVT_WIP_STATUS                                            =   ' ' then set  new.ACTION_GVT_WIP_STATUS                                            :=   null;  end if;
+   if new.ACTION_GVT_WIP_STATUS_DESCR                                      =   ' ' then set  new.ACTION_GVT_WIP_STATUS_DESCR                                      :=   null;  end if;
+   if new.ACTION_GVT_STATUS_TYPE                                           =   ' ' then set  new.ACTION_GVT_STATUS_TYPE                                           :=   null;  end if;
+   if new.ACTION_GVT_STATUS_TYPE_DESCR                                     =   ' ' then set  new.ACTION_GVT_STATUS_TYPE_DESCR                                     :=   null;  end if;
+   if new.ACTION_EMPLID                                                    =   ' ' then set  new.ACTION_EMPLID                                                    :=   null;  end if;
+
+   if new.TRANSACTION_TYPE in ('NEW','PUF')
+   then
+
+     set new.REQ_REC_LATEST_APPR_AUDIT_STAMP := COALESCE(new.REQ_REC_LATEST_APPR_AUDIT_STAMP,new.REQ_REC_APPR_AUDIT_STAMP) ;
+
+     if new.REQ_REC_LATEST_APPR_AUDIT_STAMP is not null
+     then
+         set new.REQ_FOURDIGIT_FISCAL_YEAR_OF_APPR_DT     := YEAR(DATE_FORMAT(DATE_ADD( new.REQ_REC_LATEST_APPR_AUDIT_STAMP ,INTERVAL 3 MONTH) ,'%Y-09-30')) ;
+         set new.REQ_FISCAL_YEAR_ACTION_APPR_DT           := CONCAT('FY',SUBSTR(YEAR(DATE_FORMAT(new.REQ_REC_LATEST_APPR_AUDIT_STAMP ,'%Y-09-30')),3,2)) ;
+     end if;
+   else
+         set new.REQ_FOURDIGIT_FISCAL_YEAR_OF_APPR_DT     := YEAR(DATE_FORMAT(DATE_ADD( new.REQ_ACTION_DT_SS ,INTERVAL 3 MONTH) ,'%Y-09-30')) ;
+         set new.REQ_FISCAL_YEAR_ACTION_APPR_DT           := CONCAT('FY',SUBSTR(YEAR(DATE_FORMAT(new.REQ_ACTION_DT_SS ,'%Y-09-30')),3,2)) ;
+   end if;
+
+END;                                                                                                                                                                                
+//                                                                                                                                                                                  
+DELIMITER ; 

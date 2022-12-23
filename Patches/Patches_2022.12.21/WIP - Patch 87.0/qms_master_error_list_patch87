@@ -1,0 +1,24 @@
+INSERT INTO aca.qms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT) 
+VALUES (272,309,'MGS:VACPAR:001','Y','Y','1','1',
+        '<p>The PAR # field in Vacancy Builder should not be empty </p> \n<br>\n<br>\nCurrent Value(s): \n<br> \n<br> \nVacancy Announcement Number: &NHRDW_FILLER_01 <br>\nVacancy Opened Date: &NHRDW_FILLER_02 <br>\nHR Specialist: &NHRDW_FILLER_03 <br>\nRequesting Official: &NHRDW_FILLER_04 <br>',
+		CURDATE(), CURDATE(),NULL);
+
+INSERT INTO aca.qms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT) 
+VALUES (273,309,'MGS:VACPAR:002','Y','Y','1','1',
+        '<p>The PAR # field in Vacancy Builder must be a comma-separated list of PAR numbers in the format of:<br>\n{number}U, {number}C <br>\nExample:  1234U,1235C,8728U <br>\n</p> \n<br>\n<br>\nCurrent Value(s): \n<br> \n<br> \nVacancy Announcement Number: &NHRDW_FILLER_01 <br>\n<strong>Request Number field with the invalid entry is: &NHRDW_FILLER_02</strong> <br>\nHR Specialist: &NHRDW_FILLER_03 <br>\nRequesting Official: &NHRDW_FILLER_04 <br>',
+		CURDATE(), CURDATE(),NULL);
+
+INSERT INTO aca.qms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT) 
+VALUES (274,310,'USS:REQNUM:001','Y','Y','1','1',
+        '<p>The Request Number field in the request is an invalid format.  The format should be: <br>\n{number}U OR <br>\n{number}C <br>\nExample:  1234U \n</p> \n<br>\n<br>\nCurrent Value(s): \n<br> \n<br> \n<strong>Invalid Request Number: &NHRDW_FILLER_01 </strong><br>\nHR Manager Name: &NHRDW_FILLER_02 <br>\n                                     ',
+		CURDATE(), CURDATE(),NULL);
+
+INSERT INTO aca.ms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT)  
+VALUES (275,311,'MGS:HIRPAR:001','Y','Y','1','1',
+        '<p>The PAR Number field is required on the Hire Applicant screen. It must be in the format of :<br>\n{number}U OR <br>\n{number}C <br>\nExample:  1234U \n</p> \n<br>\n<br>\nCurrent Value(s):  \n<br> \n<br>  \nVacancy Announcement Number: &NHRDW_FILLER_01 <br>\nStaging Area Name: &NHRDW_FILLER_04 <br>\nCertificate Name: &NHRDW_FILLER_02 <br>\nApplicant Last Name: &NHRDW_FILLER_03<br>',
+		CURDATE(), CURDATE(),NULL);
+
+INSERT INTO aca.qms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT)  
+VALUES (276,311,'MGS:HIRPAR:002','Y','Y','1','1',
+        '<p>The PAR Number field on the Hire Applicant screen is in the wrong format. It must be in the format of :<br>\n{number}U OR <br>\n{number}C <br>\nExample:  1234U \n</p> \n<br>\n<br>\nCurrent Value(s):  \n<br> \n<br>  \nVacancy Announcement Number: &NHRDW_FILLER_01 <br>\nStaging Area Name: &NHRDW_FILLER_05 <br>\nCertificate Name: &NHRDW_FILLER_02 <br>\nApplicant Last Name: &NHRDW_FILLER_03 <br>\n\n<strong>PAR Number entered in error was:  &NHRDW_FILLER_04 </strong> <br> ',
+		CURDATE(), CURDATE(),NULL);

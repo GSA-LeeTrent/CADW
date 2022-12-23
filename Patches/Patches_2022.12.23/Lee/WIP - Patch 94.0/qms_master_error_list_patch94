@@ -1,0 +1,10 @@
+
+INSERT INTO aca.qms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT) 
+VALUES (278,312,'STAR:PARSTATUS:002','Y','Y','1','1',
+        '<p>The PAR is cancelled in STAR, but in HR Links the Recruitment Cancelled slider has not been set. </p>\n<br> \n<br> \n<br> \nHR Specialist: &NHRDW_FILLER_01 <br>\nPAR Number: &NHRDW_FILLER_02 <br>\nRPA Cancelled in STAR: &NHRDW_FILLER_03 <br>\nEmployee Last Name from STAR: &NHRDW_FILLER_04  <br>\nPosition Number from HR Links: &NHRDW_FILLER_05 <br>\nJob Title from HR Links: &NHRDW_FILLER_06 <br>	 \nReports To from HR Links: &NHRDW_FILLER_07 <br>	 \nDept ID for HR Links: &NHRDW_FILLER_08 <br>	  ',
+		CURDATE(), CURDATE(),NULL);
+
+INSERT INTO aca.qms_master_error_list (ERROR_LIST_ID,DATA_ITEM_ID,QMS_ERROR_CODE,HRDW_DATA_LOAD_ENABLED,QMS_DATA_LOAD_ENABLED,ERRORROUTINGTYPEID,DATAROUTINGTYPEID,ERROR_MESSAGE_TEXT,CREATED_AT,UPDATED_AT,DELETED_AT) 
+VALUES (277,312,'STAR:PARSTATUS:001','Y','Y','1','1',
+        '<p>STAR has a status of Completed EOD’ed but the MSS PAR in HR Links shows that it is not complete</p>\n<br> \n<br> \n<br> \nHR Specialist: &NHRDW_FILLER_01 <br>\nPAR Number: &NHRDW_FILLER_02 <br>\nEOD Date entered in STAR: &NHRDW_FILLER_03 <br>\nEmployee Last Name from STAR: &NHRDW_FILLER_04  <br>\nPosition Number from HR Links: &NHRDW_FILLER_05 <br>\nJob Title from HR Links: &NHRDW_FILLER_06 <br>	 \nReports To from HR Links: &NHRDW_FILLER_07 <br>	 \nDept ID for HR Links: &NHRDW_FILLER_08 <br>	  ',
+		CURDATE(), CURDATE(),NULL);

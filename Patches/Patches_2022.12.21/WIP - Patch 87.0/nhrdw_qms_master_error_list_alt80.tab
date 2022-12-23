@@ -1,0 +1,9 @@
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list DROP column  QMS_SHORT_DESCRIPTION ;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list add column  QMS_SHORT_DESCRIPTION VARCHAR(255) AFTER QMS_ERROR_MESSAGE_TEXT;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list DROP column  QMS_KEY_TEXT ;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list add column  QMS_KEY_TEXT text AFTER QMS_SHORT_DESCRIPTION;
+
+

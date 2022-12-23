@@ -1,0 +1,170 @@
+use new_hrdw;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list DROP column  QMS_SHORT_DESCRIPTION ;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list add column  QMS_SHORT_DESCRIPTION VARCHAR(255) AFTER QMS_ERROR_MESSAGE_TEXT;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list DROP column  QMS_KEY_TEXT ;
+
+ALTER TABLE new_hrdw.nhrdw_qms_master_error_list add column  QMS_KEY_TEXT text AFTER QMS_SHORT_DESCRIPTION;
+
+
+DROP TABLE NEW_HRDW.NHRDW_QMS_NOTIFICATIONS;
+
+CREATE TABLE IF NOT EXISTS NEW_HRDW.NHRDW_QMS_NOTIFICATIONS
+(
+ QMS_NOTIFICATION_ID          BIGINT          AUTO_INCREMENT PRIMARY KEY           
+,TRANSACTION_CONTROL_ID       BIGINT          NOT NULL        
+,QMS_KEY                      VARCHAR(255)    NOT NULL   
+,ERROR_LIST_ID                BIGINT          NOT NULL 
+,QMS_KEY_TEXT                 TEXT            NOT NULL 
+,QMS_SHORT_DESCRIPTION        TEXT             
+,QMS_KEY_FIELD_1              VARCHAR(255)     
+,QMS_KEY_FIELD_2              VARCHAR(255)     
+,QMS_KEY_FIELD_3              VARCHAR(255)     
+,QMS_KEY_FIELD_4              VARCHAR(255)     
+,QMS_KEY_FIELD_5              VARCHAR(255)     
+,QMS_KEY_FIELD_6              VARCHAR(255)     
+,QMS_KEY_FIELD_7              VARCHAR(255)     
+,QMS_KEY_FIELD_8              VARCHAR(255)     
+,QMS_KEY_FIELD_9              VARCHAR(255)     
+,QMS_KEY_FIELD_10             VARCHAR(255)      
+,FIELD_1              			  VARCHAR(255)     
+,FIELD_2              			  VARCHAR(255)     
+,FIELD_3              			  VARCHAR(255)     
+,FIELD_4              			  VARCHAR(255)     
+,FIELD_5              			  VARCHAR(255)     
+,FIELD_6              			  VARCHAR(255)     
+,FIELD_7              			  VARCHAR(255)     
+,FIELD_8              			  VARCHAR(255)     
+,FIELD_9              			  VARCHAR(255)     
+,FIELD_10              			  VARCHAR(255)
+,NOTIFICATION_EMAIL_ADDRESS   VARCHAR(255)
+,QMS_ROUTING_KEY              VARCHAR(255)     
+,QMS_ROUTING_KEY_FIELD_1      VARCHAR(255)     
+,QMS_ROUTING_KEY_FIELD_2      VARCHAR(255)     
+,QMS_ROUTING_KEY_FIELD_3      VARCHAR(255)     
+,QMS_ROUTING_KEY_FIELD_4      VARCHAR(255)     
+,QMS_ROUTING_KEY_FIELD_5      VARCHAR(255)
+,QMS_NOTIFICATION_TEXT        TEXT
+,CREATED_BY              		  VARCHAR(500)    NOT NULL
+,CREATION_DATE           		  DATETIME        NOT NULL
+,LAST_UPDATE_DATE        		  DATETIME        NOT NULL
+,LAST_UPDATED_BY         		  VARCHAR(500)    NOT NULL
+) ENCRYPTION = 'Y';
+
+CREATE UNIQUE INDEX NHRDW_QMS_NOTIFICATIONS_UNQ_IDX_1	 ON NHRDW_QMS_NOTIFICATIONS (TRANSACTION_CONTROL_ID,QMS_KEY,ERROR_LIST_ID);
+
+CREATE INDEX NHRDW_QMS_NOTIFICATIONS_NUNQ_IDX_1	 ON NHRDW_QMS_NOTIFICATIONS (QMS_KEY);
+
+DELIMITER //
+CREATE TRIGGER NHRDW_QMS_NOTIFICATIONS_WHO_INSERT            
+BEFORE INSERT ON NHRDW_QMS_NOTIFICATIONS FOR EACH ROW
+BEGIN                                                          
+DECLARE                                                        
+
+  l_sysdate datetime default CURRENT_TIMESTAMP;                  
+  if  new.created_by    is null and                           
+      new.creation_date is null then                          
+      set new.created_by      := user();                
+      set new.creation_date   := l_sysdate;                         
+   end if;           
+                                             
+                                                      
+  set new.last_update_date  := l_sysdate;                     
+                                                     
+  set new.last_updated_by   := user();    
+
+               
+END;
+//
+DELIMITER ;
+
+
+DELIMITER //
+CREATE TRIGGER NHRDW_QMS_NOTIFICATIONS_WHO_UPDATE            
+BEFORE UPDATE ON NHRDW_QMS_NOTIFICATIONS FOR EACH ROW
+BEGIN                                                          
+DECLARE                                                        
+
+  l_sysdate datetime default CURRENT_TIMESTAMP;                  
+  if  new.created_by    is null and                           
+      new.creation_date is null then                          
+      set new.created_by      := user();                
+      set new.creation_date   := l_sysdate;                         
+   end if;           
+                                             
+                                                      
+  set new.last_update_date  := l_sysdate;                     
+                                                     
+  set new.last_updated_by   := user();      
+
+             
+END;
+//
+DELIMITER ;
+
+exit
+
+
+
+
+CREATE OR REPLACE VIEW nhrdw_qms_notifications_current_v  as
+SELECT 
+         rec.qms_key
+        ,rec.qms_key_text
+        ,rec.qms_short_description
+        ,dt.system_name
+        ,dt.data_item_name
+        ,dt.data_item_category
+        ,qmel.data_item_id
+        ,qmel.error_list_id
+        ,qmel.qms_error_code 
+        ,qmel.enable_qms                                		     
+        ,rec.qms_key_field_1              		
+        ,rec.qms_key_field_2              		
+        ,rec.qms_key_field_3              		
+        ,rec.qms_key_field_4              		
+        ,rec.qms_key_field_5              		
+        ,rec.qms_key_field_6              		
+        ,rec.qms_key_field_7              		
+        ,rec.qms_key_field_8              		                  
+        ,rec.qms_key_field_9              		               
+        ,rec.qms_key_field_10  
+        ,rec.field_1              		
+        ,rec.field_2              		
+        ,rec.field_3              		
+        ,rec.field_4              		
+        ,rec.field_5              		
+        ,rec.field_6              		
+        ,rec.field_7              		
+        ,rec.field_8              		                  
+        ,rec.field_9              		               
+        ,rec.field_10              		                 
+        ,rec.notification_email_address  
+        ,rec.qms_notification_text  
+        ,rec.transaction_control_id
+        ,rec.qms_routing_key                               
+        ,rec.qms_routing_key_field_1                       
+        ,rec.qms_routing_key_field_2                          
+        ,rec.qms_routing_key_field_3                          
+        ,rec.qms_routing_key_field_4                          
+        ,rec.qms_routing_key_field_5                                        
+from    nhrdw_qms_notifications rec 
+        join            nhrdw_latest_txn_controls     ltc  on  ltc.type_of_record = 'Snapshot' and rec.transaction_control_id = ltc.transaction_control_id
+        join            nhrdw_snapshot_ctrl snap  on  snap.transaction_control_id       = ltc.transaction_control_id     
+        join            nhrdw_qms_master_error_list  qmel  on  qmel.error_list_id = rec.error_list_id
+        join            nhrdw_data_item dt                 on  dt.data_item_id    = qmel.data_item_id
+   ;
+/*        
+WHERE   empljob.transaction_control_id in
+        ( select  snap_pp.transaction_control_id 
+          from    nhrdw_snapshot_ctrl snap_pp
+          where   snap_pp.type_of_record = 'Snapshot'
+          and     snap_pp.completion_status = 'S'  
+          and     snap_pp.snapshot_date = '2020-04-30'
+        );
+*/
+
+grant select on nhrdw_qms_notifications_current_v to HRLINKS_USER ;
+grant select on nhrdw_qms_notifications_current_v to ACA_USER ;
